@@ -99,7 +99,7 @@ async function request<T>(
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   if (res.status === 204) return undefined as T;
 
-  if (res.status === 401 && retryOnUnauthorized && path !== "/auth/sync") {
+  if (res.status === 401 && retryOnUnauthorized && path !== "/api/auth/sync") {
     const refreshed = await refreshTokenOnce();
     if (refreshed) {
       return request<T>(path, options, false);
