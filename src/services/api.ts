@@ -121,7 +121,7 @@ async function syncUserRequest(user: User): Promise<{ token: string }> {
 
   setAuthSyncUser(user);
   const firebaseToken = await firebaseUser.getIdToken(true);
-  return request<{ token: string }>("/auth/sync", {
+  return request<{ token: string }>("/api/auth/sync", {
     method: "POST",
     body: JSON.stringify({ ...user, firebaseToken }),
   }, false);
