@@ -4,6 +4,7 @@ import { Plus, Search, SlidersHorizontal, X } from "lucide-react";
 import { useWardrobe } from "../context/WardrobeContext";
 import { ClothingCard } from "../components/ClothingCard";
 import { UploadModal } from "../components/UploadModal";
+import { FallbackImage } from "../components/ui/FallbackImage";
 import type { Category, ClothingItem } from "../types";
 import { titleCase } from "../lib/utils";
 
@@ -178,7 +179,13 @@ export function Wardrobe() {
               className="fixed right-0 top-0 bottom-0 w-full sm:w-[440px] bg-[color:var(--color-bg-elev)] border-l border-[color:var(--color-border)] z-50 overflow-y-auto"
             >
               <div className="relative aspect-[4/5] bg-[color:var(--color-surface)]">
-                <img src={detail.imageUrl} alt={detail.name} className="absolute inset-0 w-full h-full object-cover" />
+                <FallbackImage
+                  src={detail.imageUrl}
+                  alt={detail.name}
+                  category={detail.category}
+                  fallbackLabel={detail.name}
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
                 <button
                   onClick={() => setDetail(null)}
                   className="absolute top-4 right-4 h-9 w-9 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center border border-white/10"

@@ -56,6 +56,13 @@ ${profileContext}
 Be concise (2-4 sentences). Tone: calm, luxurious, confident.
 Use ONLY items from the user's wardrobe when suggesting outfits.
 Give advice relevant to the user's gender and skin tone.
+When recommending an outfit, include:
+- The occasion you are styling for, inferred from the user's message.
+- 2-4 exact wardrobe item names from the wardrobe context.
+- The main colors and why they work together.
+- One short reason the outfit works for the occasion.
+- One alternative exact wardrobe item the user could swap in.
+Never invent item names, colors, or categories. If the wardrobe is missing a needed category, say what is missing and style around the closest available item.
 No markdown headers or bullet lists unless asked.`;
 }
 
@@ -162,7 +169,7 @@ export async function stylistReply(
   profile?: AIProfile
 ): Promise<string> {
   const context = wardrobeContext(items, outfits);
-  const prompt = `${context}\n\nUser: ${userMessage}`;
+  const prompt = `${context}\n\nUser: ${userMessage}\n\nRespond with concrete wardrobe advice. If you suggest an outfit, name actual items from the wardrobe, explain the color/occasion logic, and include one alternative item.`;
   const system = stylistSystem(profile);
 
   if (process.env.GROQ_API_KEY) {
@@ -187,7 +194,7 @@ export async function generateOutfitNotes(
   profile?: AIProfile
 ): Promise<string> {
   void palette;
-  const prompt = `You are a luxury fashion stylist. Write ONE elegant sentence (max 30 words).
+  const prompt = `You are a luxury fashion stylist. Write ONE elegant sentence (max 34 words).
 Occasion: ${mode}.
 Pieces: ${itemNames.join(", ")}.
 Color theory verdict: ${colorReason ?? "harmonious palette"}.
@@ -195,8 +202,8 @@ Style score: ${score !== undefined ? Math.round(score * 10) : "N/A"}/100.
 ${violations?.length ? `Style considerations: ${violations.join(", ")}` : "All style rules passed."}
 ${profile?.skinTone ? `Skin tone: ${profile.skinTone}. ${getSkinToneGuidance(profile.skinTone)}` : ""}
 ${profile?.gender ? `Gender: ${profile.gender}.` : ""}
-Describe the mood and why these specific pieces work together.
-Reference the actual piece names. No quotes. No markdown.`;
+Describe why these exact pieces work for ${mode}, including the occasion and colors.
+Reference actual piece names. No quotes. No markdown.`;
 
   if (process.env.GROQ_API_KEY) {
     return callGroq(

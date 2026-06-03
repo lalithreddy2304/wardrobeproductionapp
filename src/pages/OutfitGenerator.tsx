@@ -8,6 +8,7 @@ import { api, ApiError } from "../services/api";
 import { createOutfitRecord, type OutfitMode } from "../lib/outfit";
 import type { ClothingItem, OutfitItemRef } from "../types";
 import { titleCase } from "../lib/utils";
+import { FallbackImage } from "../components/ui/FallbackImage";
 
 const MODES: { key: OutfitMode; label: string; desc: string }[] = [
   { key: "random", label: "Serendipity", desc: "A considered surprise" },
@@ -91,7 +92,13 @@ export function OutfitGenerator() {
                       transition={{ delay: i * 0.08, duration: 0.5 }}
                       className="relative aspect-[4/5] rounded-2xl overflow-hidden border border-[color:var(--color-border)] bg-[color:var(--color-surface)]"
                     >
-                      <img src={item.imageUrl} alt={item.name} className="absolute inset-0 w-full h-full object-cover" />
+                      <FallbackImage
+                        src={item.imageUrl}
+                        alt={item.name}
+                        category={item.category}
+                        fallbackLabel={item.name}
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                       <div className="absolute bottom-3 left-3 right-3">
                         <p className="text-[9px] uppercase tracking-[0.22em] text-[color:var(--color-gold)]">

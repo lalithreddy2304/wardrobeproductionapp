@@ -13,6 +13,7 @@ import {
   ShoppingBag,
   Wind,
 } from "lucide-react";
+import { FallbackImage } from "../components/ui/FallbackImage";
 import { api, ApiError } from "../services/api";
 import { useWardrobe } from "../context/WardrobeContext";
 import type { Category, DayOutfitPlan, PackActivity, PackedWardrobeItem, PackQuantity, PackResponse, WardrobeMatch } from "../types";
@@ -412,7 +413,15 @@ function ItemImage({
   const className = size === "large" ? "h-16 w-16 rounded-xl" : "aspect-square w-full rounded-lg";
 
   if (item?.imageUrl) {
-    return <img src={item.imageUrl} alt={displayName} className={`${className} object-cover`} />;
+    return (
+      <FallbackImage
+        src={item.imageUrl}
+        alt={displayName}
+        category={item.category}
+        fallbackLabel={displayName}
+        className={`${className} object-cover`}
+      />
+    );
   }
 
   return (

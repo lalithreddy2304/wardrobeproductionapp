@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useWardrobe } from "../context/WardrobeContext";
+import { FallbackImage } from "../components/ui/FallbackImage";
 import type { Category, ClothingItem, Outfit } from "../types";
 
 const categories: Category[] = ["tops", "bottoms", "shoes", "accessories"];
@@ -258,10 +259,12 @@ function TodaysOutfitSection({
 
           <div className="flex gap-2 overflow-x-auto lg:max-w-md">
             {outfitItems.map((item) => (
-              <img
+              <FallbackImage
                 key={item.id}
                 src={item.imageUrl}
                 alt={item.name}
+                category={item.category}
+                fallbackLabel={item.name}
                 className="h-24 w-24 shrink-0 rounded-xl object-cover"
               />
             ))}
@@ -417,9 +420,11 @@ function RecentAdditions({
             key={item.id}
             className="flex min-w-0 items-center gap-3 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-3"
           >
-            <img
+            <FallbackImage
               src={item.imageUrl}
               alt={item.name}
+              category={item.category}
+              fallbackLabel={item.name}
               className="h-12 w-12 shrink-0 rounded-lg object-cover"
             />
             <div className="min-w-0 flex-1">

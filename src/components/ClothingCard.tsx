@@ -2,6 +2,7 @@ import { Heart, MoreHorizontal, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { ClothingItem } from "../types";
 import { titleCase } from "../lib/utils";
+import { FallbackImage } from "./ui/FallbackImage";
 
 type Props = {
   item: ClothingItem;
@@ -24,9 +25,11 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
         onClick={() => onClick?.(item)}
         className="relative aspect-[4/5] cursor-pointer overflow-hidden rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] md:rounded-2xl"
       >
-        <img
+        <FallbackImage
           src={item.imageUrl}
           alt={item.name}
+          category={item.category}
+          fallbackLabel={item.name}
           loading="lazy"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-105"
         />

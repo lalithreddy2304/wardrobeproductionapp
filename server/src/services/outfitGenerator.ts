@@ -2,23 +2,121 @@ import { scoreColorCompatibility, scoreOutfitPalette, isNeutral } from "./ittenC
 import { scoreFrenchMethod, assignColorRoles } from "./frenchCapsuleMethod.js";
 import type { ClothingItem, OutfitItemRef } from "../types.js";
 
-export type OutfitMode = "random" | "casual" | "formal" | "party" | "wedding";
+export type OutfitMode = "random" | "casual" | "formal" | "party" | "wedding" | "office" | "date" | "travel";
 
-const OCCASION_RULES: Record<OutfitMode, { tags?: string[]; avoidTags?: string[] }> = {
-  random: {},
-  casual: { tags: ["casual", "cotton", "linen", "denim", "minimal"], avoidTags: ["wedding"] },
-  formal: { tags: ["formal", "silk", "wool", "blazer", "leather"] },
-  party: { tags: ["silk", "trendy", "accent"], avoidTags: ["wedding", "cozy"] },
-  wedding: { tags: ["wedding", "formal", "feminine", "silk"] },
+type OccasionRule = {
+  preferTags: string[];
+  avoidTags: string[];
+  targetFormality: number;
+  categoryTags: Partial<Record<ClothingItem["category"], string[]>>;
+};
+
+const OCCASION_RULES: Record<OutfitMode, OccasionRule> = {
+  random: {
+    preferTags: ["minimal", "classic", "smart-casual"],
+    avoidTags: [],
+    targetFormality: 3,
+    categoryTags: {},
+  },
+  casual: {
+    preferTags: ["casual", "cotton", "linen", "denim", "minimal", "travel"],
+    avoidTags: ["wedding", "evening"],
+    targetFormality: 2,
+    categoryTags: {
+      bottoms: ["denim", "chino", "cotton"],
+      shoes: ["sneakers", "casual", "travel"],
+    },
+  },
+  formal: {
+    preferTags: ["formal", "smart", "tailored", "office", "wool", "leather"],
+    avoidTags: ["gym", "beach"],
+    targetFormality: 4,
+    categoryTags: {
+      tops: ["blazer", "shirt", "silk", "formal"],
+      bottoms: ["tailored", "trousers", "formal"],
+      shoes: ["formal", "leather", "chelsea"],
+      accessories: ["watch", "belt", "formal"],
+    },
+  },
+  office: {
+    preferTags: ["office", "smart-casual", "tailored", "chino", "wool", "minimal"],
+    avoidTags: ["wedding", "party", "beach", "gym"],
+    targetFormality: 3.5,
+    categoryTags: {
+      tops: ["sweater", "shirt", "blazer", "office"],
+      bottoms: ["chino", "tailored", "trousers", "office"],
+      shoes: ["chelsea", "leather", "formal"],
+      accessories: ["watch", "belt", "minimal"],
+    },
+  },
+  party: {
+    preferTags: ["party", "trendy", "accent", "silk", "date", "jacket"],
+    avoidTags: ["wedding", "cozy", "office", "formal"],
+    targetFormality: 2.6,
+    categoryTags: {
+      tops: ["jacket", "silk", "trendy", "party"],
+      bottoms: ["denim", "trendy", "casual", "wide-leg"],
+      shoes: ["sneakers", "casual", "party", "minimal"],
+      accessories: ["jewelry", "accent", "statement"],
+    },
+  },
+  date: {
+    preferTags: ["date", "silk", "knit", "smart-casual", "accent", "minimal"],
+    avoidTags: ["gym", "beach"],
+    targetFormality: 3,
+    categoryTags: {
+      tops: ["silk", "knit", "blouse", "sweater"],
+      bottoms: ["tailored", "skirt", "denim"],
+      shoes: ["chelsea", "heels", "leather"],
+      accessories: ["watch", "jewelry", "accent"],
+    },
+  },
+  travel: {
+    preferTags: ["travel", "casual", "cotton", "denim", "chino", "minimal"],
+    avoidTags: ["wedding", "heels", "evening"],
+    targetFormality: 2,
+    categoryTags: {
+      tops: ["cotton", "casual", "knit"],
+      bottoms: ["denim", "chino", "travel"],
+      shoes: ["sneakers", "travel", "casual"],
+      accessories: ["belt", "minimal"],
+    },
+  },
+  wedding: {
+    preferTags: ["wedding", "formal", "tailored", "silk", "blazer", "jewelry"],
+    avoidTags: ["casual", "denim", "sneakers", "travel"],
+    targetFormality: 4.5,
+    categoryTags: {
+      tops: ["blazer", "formal", "silk"],
+      bottoms: ["formal", "tailored", "skirt", "trousers"],
+      shoes: ["formal", "heels", "leather"],
+      accessories: ["watch", "jewelry", "formal"],
+    },
+  },
 };
 
 const recentlyUsedItems = new Map<string, string[]>();
+const recentlyUsedSignatures = new Map<string, string[]>();
+
+function tagsFor(item: ClothingItem): string[] {
+  return item.tags.map((tag) => tag.toLowerCase());
+}
+
+function textFor(item: ClothingItem): string {
+  return `${item.name} ${item.category} ${item.color} ${item.tags.join(" ")}`.toLowerCase();
+}
+
+function matchesAny(item: ClothingItem, needles: string[]): boolean {
+  const text = textFor(item);
+  return needles.some((needle) => text.includes(needle.toLowerCase()));
+}
 
 function score(item: ClothingItem, mode: OutfitMode): number {
   const rules = OCCASION_RULES[mode];
   let s = 1;
-  if (rules.avoidTags?.some((t) => item.tags.includes(t))) s -= 10;
-  if (rules.tags?.some((t) => item.tags.includes(t))) s += 2;
+  if (matchesAny(item, rules.avoidTags)) s -= 4;
+  if (matchesAny(item, rules.preferTags)) s += 2;
+  if (matchesAny(item, rules.categoryTags[item.category] ?? [])) s += 2.5;
   if (item.isFavorite) s += 0.5;
   if (item.usageCount > 5 && item.usageCount < 25) s += 0.3;
   return Math.max(0.1, s);
@@ -26,12 +124,24 @@ function score(item: ClothingItem, mode: OutfitMode): number {
 
 function recentItemPenalty(userId: string, item: ClothingItem): number {
   const recent = recentlyUsedItems.get(userId) ?? [];
-  return recent.filter((itemId) => itemId === item.id).length * 3;
+  return recent.filter((itemId) => itemId === item.id).length * 0.45;
+}
+
+function outfitSignature(itemIds: string[]): string {
+  return [...itemIds].sort().join("|");
+}
+
+function repeatPenalty(userId: string, itemIds: string[]): number {
+  const recentSignatures = recentlyUsedSignatures.get(userId) ?? [];
+  const signature = outfitSignature(itemIds);
+  return recentSignatures.includes(signature) ? 4 : 0;
 }
 
 function rememberRecentlyUsedItems(userId: string, itemIds: string[]) {
   const recent = recentlyUsedItems.get(userId) ?? [];
   recentlyUsedItems.set(userId, [...recent, ...itemIds].slice(-6));
+  const signatures = recentlyUsedSignatures.get(userId) ?? [];
+  recentlyUsedSignatures.set(userId, [outfitSignature(itemIds), ...signatures].slice(0, 8));
 }
 
 function weightedPick(pool: ClothingItem[], mode: OutfitMode): ClothingItem | undefined {
@@ -72,10 +182,10 @@ function inPalette(item: ClothingItem, palette: string[]): boolean {
 
 function getItemFormality(item: ClothingItem): number {
   const tags = item.tags.map((tag) => tag.toLowerCase());
-  if (tags.some((tag) => ["casual", "cotton", "denim", "relaxed"].includes(tag))) return 1;
-  if (tags.some((tag) => ["minimal", "linen", "everyday"].includes(tag))) return 2;
-  if (tags.some((tag) => ["smart-casual", "chino"].includes(tag))) return 3;
-  if (tags.some((tag) => ["formal", "silk", "wool", "blazer", "tailored"].includes(tag))) return 4;
+  if (tags.some((tag) => ["gym", "beach", "relaxed"].includes(tag))) return 1;
+  if (tags.some((tag) => ["casual", "cotton", "denim", "travel"].includes(tag))) return 2;
+  if (tags.some((tag) => ["minimal", "linen", "everyday", "smart-casual", "chino", "date", "party"].includes(tag))) return 3;
+  if (tags.some((tag) => ["formal", "silk", "wool", "blazer", "tailored", "office", "leather"].includes(tag))) return 4;
   if (tags.some((tag) => ["wedding", "gown", "evening"].includes(tag))) return 5;
   return 2;
 }
@@ -86,7 +196,10 @@ function formalityCompatible(item: ClothingItem, mode: OutfitMode): boolean {
     casual: [1, 2],
     random: [1, 4],
     formal: [3, 5],
-    party: [3, 4],
+    office: [3, 4],
+    party: [2, 4],
+    date: [2, 4],
+    travel: [1, 3],
     wedding: [4, 5],
   };
   const [min, max] = ranges[mode];
@@ -96,10 +209,16 @@ function formalityCompatible(item: ClothingItem, mode: OutfitMode): boolean {
 function occasionDescription(mode: OutfitMode): string {
   return mode === "formal"
     ? "A tailored silhouette with structured lines. Keep accessories minimal and polished."
+    : mode === "office"
+    ? "Smart-casual polish for work: structured, comfortable, and quietly refined."
     : mode === "casual"
     ? "Relaxed, everyday elegance. Layer lightly and prioritize comfort without sacrificing style."
     : mode === "party"
     ? "Elevated textures and a confident palette. Let one statement piece carry the look."
+    : mode === "date"
+    ? "Balanced and attractive: flattering color contrast, considered layers, and one polished detail."
+    : mode === "travel"
+    ? "Comfortable, versatile, and walking-friendly while still feeling intentional."
     : mode === "wedding"
     ? "Soft, considered, and elegant. Stick to muted tones and refined tailoring."
     : "A balanced composition — let the palette and proportions do the talking.";
@@ -144,7 +263,13 @@ function fallbackGenerateOutfit(
   if (shoes) refs.push({ itemId: shoes.id, role: "shoes" });
   accessories.forEach((a) => refs.push({ itemId: a.id, role: "accessory" }));
   const mood =
-    mode === "casual" ? "Effortless" : mode === "formal" ? "Refined" : mode === "party" ? "Statement" : mode === "wedding" ? "Graceful" : "Curated";
+    mode === "casual" ? "Effortless" :
+    mode === "formal" || mode === "office" ? "Refined" :
+    mode === "party" ? "Statement" :
+    mode === "date" ? "Balanced" :
+    mode === "travel" ? "Versatile" :
+    mode === "wedding" ? "Graceful" :
+    "Curated";
   const name = `${mood} ${top?.color ?? ""}${top?.color && bottom?.color ? " & " : ""}${bottom?.color ?? ""} Look`.trim();
   const paletteStr = palette.slice(0, 3).join(", ");
   const base = occasionDescription(mode);
@@ -162,6 +287,80 @@ function fallbackGenerateOutfit(
     violations: [],
     colorReason: paletteScore?.reason ?? "Compatible palette",
   };
+}
+
+function clampScore(value: number): number {
+  return Math.max(0, Math.min(10, value));
+}
+
+function average(values: number[]): number {
+  if (values.length === 0) return 0;
+  return values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+
+function occasionFitScore(mode: OutfitMode, selected: ClothingItem[]): number {
+  const rule = OCCASION_RULES[mode];
+  if (mode === "random") return 6.5;
+
+  const scores = selected.map((item) => {
+    let value = 4;
+    if (matchesAny(item, rule.preferTags)) value += 2;
+    if (matchesAny(item, rule.categoryTags[item.category] ?? [])) value += 2.5;
+    if (matchesAny(item, rule.avoidTags)) value -= 4;
+    if (item.isFavorite) value += 0.3;
+    return clampScore(value);
+  });
+
+  return clampScore(average(scores));
+}
+
+function formalityScore(mode: OutfitMode, selected: ClothingItem[]): number {
+  const target = OCCASION_RULES[mode].targetFormality;
+  const closeness = selected.map((item) => {
+    const distance = Math.abs(getItemFormality(item) - target);
+    return clampScore(10 - distance * 2.4);
+  });
+  return clampScore(average(closeness));
+}
+
+function categoryBalanceScore(selected: ClothingItem[]): number {
+  const categories = new Set(selected.map((item) => item.category));
+  let score = 0;
+  if (categories.has("tops")) score += 2.5;
+  if (categories.has("bottoms")) score += 2.5;
+  if (categories.has("shoes")) score += 2.5;
+  if (categories.has("accessories")) score += 1.5;
+  if (selected.length >= 4) score += 1;
+  return clampScore(score);
+}
+
+function diversityScore(userId: string, selected: ClothingItem[]): number {
+  const colors = new Set(selected.map((item) => item.color.toLowerCase()));
+  const tagFamilies = new Set(selected.flatMap((item) => tagsFor(item)));
+  const recentPenalty = selected.reduce((sum, item) => sum + recentItemPenalty(userId, item), 0);
+  const underusedBoost = selected.filter((item) => item.usageCount < 5).length * 0.45;
+
+  return clampScore(5.5 + Math.min(colors.size, 4) * 0.6 + Math.min(tagFamilies.size, 8) * 0.18 + underusedBoost - recentPenalty);
+}
+
+function finalWeightedScore(input: {
+  occasion: number;
+  color: number;
+  formality: number;
+  balance: number;
+  diversity: number;
+  french: number;
+  repeatPenalty: number;
+}): number {
+  return (
+    input.occasion * 0.36 +
+    input.color * 0.18 +
+    input.formality * 0.18 +
+    input.balance * 0.12 +
+    input.diversity * 0.08 +
+    input.french * 0.08 -
+    input.repeatPenalty
+  );
 }
 
 export function generateOutfit(
@@ -194,58 +393,100 @@ export function generateOutfit(
     accessory?: ClothingItem;
     score: number;
     colorScore: number;
+    occasionScore: number;
+    formalityScore: number;
+    balanceScore: number;
+    diversityScore: number;
+    repeatPenalty: number;
     frenchScore: number;
     colorReason: string;
     violations: string[];
   }> = [];
 
-  for (const top of byCategory.tops.slice(0, 5)) {
-    for (const bottom of byCategory.bottoms.slice(0, 4)) {
-      const colorResult = scoreColorCompatibility(top.color, bottom.color);
-      const bestShoe = byCategory.shoes
-        .map((shoe) => ({
-          shoe,
-          score: scoreColorCompatibility(shoe.color, bottom.color).score,
-        }))
-        .sort((a, b) => b.score - a.score)[0]?.shoe;
-      const bestAccessory = byCategory.accessories.find((accessory) => {
-        const allColors = [top.color, bottom.color, bestShoe?.color].filter(
-          (color): color is string => Boolean(color)
-        );
-        const nonNeutrals = allColors.filter((color) => !isNeutral(color));
-        if (nonNeutrals.length >= 3 && !isNeutral(accessory.color)) return false;
-        return true;
-      });
-      const frenchResult = scoreFrenchMethod(top, bottom);
-      assignColorRoles(
-        [top, bottom, bestShoe, bestAccessory]
-          .filter((item): item is ClothingItem => Boolean(item))
-          .map((item) => ({ name: item.name, color: item.color, category: item.category }))
-      );
-      const combinedScore =
-        colorResult.score * 0.45 +
-        (frenchResult.score / 10) * 0.35 +
-        (top.isFavorite || bottom.isFavorite ? 0.5 : 0) +
-        (top.usageCount < 3 || bottom.usageCount < 3 ? 0.3 : 0) +
-        (top.usageCount > 20 || bottom.usageCount > 20 ? -0.2 : 0) -
-        recentItemPenalty(userId, top) -
-        recentItemPenalty(userId, bottom);
+  const topCandidates = byCategory.tops
+    .map((item) => ({ item, weight: score(item, mode) }))
+    .sort((a, b) => b.weight - a.weight)
+    .slice(0, 8)
+    .map(({ item }) => item);
+  const bottomCandidates = byCategory.bottoms
+    .map((item) => ({ item, weight: score(item, mode) }))
+    .sort((a, b) => b.weight - a.weight)
+    .slice(0, 8)
+    .map(({ item }) => item);
+  const shoeCandidates = byCategory.shoes
+    .map((item) => ({ item, weight: score(item, mode) }))
+    .sort((a, b) => b.weight - a.weight)
+    .slice(0, 6)
+    .map(({ item }) => item);
+  const accessoryCandidates = [
+    undefined,
+    ...byCategory.accessories
+      .map((item) => ({ item, weight: score(item, mode) }))
+      .sort((a, b) => b.weight - a.weight)
+      .slice(0, 6)
+      .map(({ item }) => item),
+  ];
 
-      combinations.push({
-        top,
-        bottom,
-        shoe: bestShoe,
-        accessory: bestAccessory,
-        score: combinedScore,
-        colorScore: colorResult.score,
-        frenchScore: frenchResult.score,
-        colorReason: colorResult.reason,
-        violations: frenchResult.tips,
-      });
+  for (const top of topCandidates) {
+    for (const bottom of bottomCandidates) {
+      for (const shoe of shoeCandidates.length ? shoeCandidates : [undefined]) {
+        for (const accessory of accessoryCandidates) {
+          const selected = [top, bottom, shoe, accessory].filter(
+            (item): item is ClothingItem => Boolean(item)
+          );
 
-      if (combinations.length >= 20) break;
+          if (accessory) {
+            const nonNeutrals = selected.map((item) => item.color).filter((color) => !isNeutral(color));
+            if (nonNeutrals.length >= 4 && !isNeutral(accessory.color)) continue;
+          }
+          if (mode === "wedding" && shoe && matchesAny(shoe, ["sneakers", "travel", "casual"])) continue;
+          if (mode === "travel" && shoe && matchesAny(shoe, ["heels", "wedding"])) continue;
+          if (mode === "party" && shoe && matchesAny(shoe, ["wedding"])) continue;
+
+          const paletteResult = scoreOutfitPalette(selected.map((item) => item.color));
+          const topBottomColor = scoreColorCompatibility(top.color, bottom.color);
+          const colorScore = clampScore(paletteResult.score * 0.72 + topBottomColor.score * 0.28);
+          const outfitOccasionScore = occasionFitScore(mode, selected);
+          const outfitFormalityScore = formalityScore(mode, selected);
+          const balanceScore = categoryBalanceScore(selected);
+          const outfitDiversityScore = diversityScore(userId, selected);
+          const itemIds = selected.map((item) => item.id);
+          const outfitRepeatPenalty =
+            repeatPenalty(userId, itemIds) +
+            selected.reduce((sum, item) => sum + recentItemPenalty(userId, item), 0);
+          const frenchResult = scoreFrenchMethod(top, bottom, shoe, accessory ? [accessory] : []);
+          assignColorRoles(
+            selected.map((item) => ({ name: item.name, color: item.color, category: item.category }))
+          );
+          const combinedScore = finalWeightedScore({
+            occasion: outfitOccasionScore,
+            color: colorScore,
+            formality: outfitFormalityScore,
+            balance: balanceScore,
+            diversity: outfitDiversityScore,
+            french: frenchResult.score / 10,
+            repeatPenalty: outfitRepeatPenalty,
+          });
+
+          combinations.push({
+            top,
+            bottom,
+            shoe,
+            accessory,
+            score: combinedScore,
+            colorScore,
+            occasionScore: outfitOccasionScore,
+            formalityScore: outfitFormalityScore,
+            balanceScore,
+            diversityScore: outfitDiversityScore,
+            repeatPenalty: outfitRepeatPenalty,
+            frenchScore: frenchResult.score,
+            colorReason: paletteResult.reason,
+            violations: frenchResult.tips,
+          });
+        }
+      }
     }
-    if (combinations.length >= 20) break;
   }
 
   combinations.sort((a, b) => b.score - a.score);
@@ -282,13 +523,24 @@ export function generateOutfit(
   refs.push({ itemId: picked.bottom.id, role: "bottom" });
   if (picked.shoe) refs.push({ itemId: picked.shoe.id, role: "shoes" });
   if (picked.accessory) refs.push({ itemId: picked.accessory.id, role: "accessory" });
-  rememberRecentlyUsedItems(userId, [picked.top.id, picked.bottom.id]);
+  rememberRecentlyUsedItems(
+    userId,
+    [picked.top.id, picked.bottom.id, picked.shoe?.id, picked.accessory?.id]
+      .filter((itemId): itemId is string => Boolean(itemId))
+  );
 
   const mood =
-    mode === "casual" ? "Effortless" : mode === "formal" ? "Refined" : mode === "party" ? "Statement" : mode === "wedding" ? "Graceful" : "Curated";
+    mode === "casual" ? "Effortless" :
+    mode === "formal" || mode === "office" ? "Refined" :
+    mode === "party" ? "Statement" :
+    mode === "date" ? "Balanced" :
+    mode === "travel" ? "Versatile" :
+    mode === "wedding" ? "Graceful" :
+    "Curated";
   const name = `${mood} ${picked.top.color} & ${picked.bottom.color} Look`;
   const base = occasionDescription(mode);
-  const notes = `${base} ${picked.colorReason}. Top: ${picked.top.name}. Bottom: ${picked.bottom.name}.${picked.shoe ? ` Shoes: ${picked.shoe.name}.` : ""}`;
+  const colorReason = picked.colorReason.replace(/\.$/, "");
+  const notes = `${base} ${colorReason}. Top: ${picked.top.name}. Bottom: ${picked.bottom.name}.${picked.shoe ? ` Shoes: ${picked.shoe.name}.` : ""}${picked.accessory ? ` Accessory: ${picked.accessory.name}.` : ""} Scored for occasion ${picked.occasionScore.toFixed(1)}/10, color ${picked.colorScore.toFixed(1)}/10, diversity ${picked.diversityScore.toFixed(1)}/10.`;
 
   return {
     name,

@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useWardrobe } from "../context/WardrobeContext";
+import { FallbackImage } from "../components/ui/FallbackImage";
 import { api, ApiError } from "../services/api";
 import type { ClothingItem } from "../types";
 
@@ -468,9 +469,11 @@ export function Shopping() {
                       <div className="mt-5 flex gap-4 overflow-x-auto pb-2">
                         {pairedItems.map((item) => (
                           <div key={item.id} className="w-20 shrink-0">
-                            <img
+                            <FallbackImage
                               src={item.imageUrl}
                               alt={item.name}
+                              category={item.category}
+                              fallbackLabel={item.name}
                               className="h-16 w-16 rounded-xl object-cover"
                             />
                             <p className="mt-2 truncate text-xs text-[color:var(--color-ink)]">{item.name}</p>
@@ -496,10 +499,12 @@ export function Shopping() {
                           >
                             <div className="flex gap-2">
                               {outfit.items.map((item) => (
-                                <img
+                                <FallbackImage
                                   key={`${item.id}-${item.category}`}
                                   src={item.imageUrl}
                                   alt={item.name}
+                                  category={item.category}
+                                  fallbackLabel={item.name}
                                   className="h-14 w-14 rounded-lg object-cover"
                                 />
                               ))}

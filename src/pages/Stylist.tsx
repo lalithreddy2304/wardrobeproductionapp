@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowUp, Bookmark, Mic, Trash2 } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useWardrobe } from "../context/WardrobeContext";
+import { FallbackImage } from "../components/ui/FallbackImage";
 import { api } from "../services/api";
 import type { ChatMessage, ClothingItem, Outfit, OutfitItemRef, UserProfile } from "../types";
 import { uid } from "../lib/utils";
@@ -488,9 +489,11 @@ function MessageBubble({
                 key={item.id}
                 className="w-24 shrink-0 rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] p-2 transition-transform duration-200 hover:-translate-y-0.5"
               >
-                <img
+                <FallbackImage
                   src={item.imageUrl}
                   alt={item.name}
+                  category={item.category}
+                  fallbackLabel={item.name}
                   className="h-20 w-20 rounded-xl object-cover"
                 />
                 <p className="mt-2 truncate text-xs text-[color:var(--color-ink-muted)]">

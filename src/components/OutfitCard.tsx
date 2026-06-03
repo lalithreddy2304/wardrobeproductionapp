@@ -2,6 +2,7 @@ import { Heart, Star, Trash2 } from "lucide-react";
 import { motion } from "framer-motion";
 import type { ClothingItem, Outfit } from "../types";
 import { titleCase } from "../lib/utils";
+import { FallbackImage } from "./ui/FallbackImage";
 
 type Props = {
   outfit: Outfit;
@@ -28,9 +29,11 @@ export function OutfitCard({ outfit, itemsById, onToggleFavorite, onRemove, onRa
       <div className="grid grid-cols-2 gap-px bg-[color:var(--color-border-soft)]">
         {resolved.slice(0, 4).map((r, i) => (
           <div key={r.item.id + i} className="relative aspect-square bg-[color:var(--color-bg)] overflow-hidden">
-            <img
+            <FallbackImage
               src={r.item.imageUrl}
               alt={r.item.name}
+              category={r.item.category}
+              fallbackLabel={r.item.name}
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <span className="absolute top-2 left-2 text-[9px] uppercase tracking-[0.2em] text-white/90 bg-black/40 backdrop-blur-md rounded-full px-2 py-0.5 border border-white/10">
