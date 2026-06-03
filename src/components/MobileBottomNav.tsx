@@ -1,8 +1,8 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
-  Heart,
   LayoutDashboard,
   MessageSquare,
+  ShoppingBag,
   Sparkles,
   UserRound,
 } from "lucide-react";
@@ -12,7 +12,7 @@ const MOBILE_TABS = [
   { to: "/", label: "Home", icon: LayoutDashboard, end: true },
   { to: "/generate", label: "Create", icon: Sparkles },
   { to: "/stylist", label: "Stylist", icon: MessageSquare },
-  { to: "/saved", label: "Saved", icon: Heart },
+  { to: "/shopping", label: "Smart Buy", icon: ShoppingBag },
   { to: "/profile", label: "Profile", icon: UserRound },
 ];
 
