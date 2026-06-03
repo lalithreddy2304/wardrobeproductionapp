@@ -1,9 +1,11 @@
 import type { ChatMessage, ClothingItem, Outfit, PackRequest, PackResponse, User, UserProfile } from "../types";
 import { auth } from "../lib/firebase";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "/api";
+const API_BASE =
+  import.meta.env.VITE_API_URL || "";
 const TOKEN_KEY = "wardrobe_jwt";
 let authSyncUser: User | null = null;
+type ApiPath = `/api/${string}`;
 
 export class ApiError extends Error {
   status: number;
@@ -85,7 +87,7 @@ async function refreshTokenOnce(): Promise<boolean> {
 }
 
 async function request<T>(
-  path: string,
+  path: ApiPath,
   options: RequestInit = {},
   retryOnUnauthorized = true
 ): Promise<T> {
@@ -108,6 +110,12 @@ async function request<T>(
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
+    console.error(
+      "API Request Failed:",
+      path,
+      res.status,
+      data
+    );
     throw new ApiError((data as { error?: string }).error ?? res.statusText, res.status);
   }
   return data as T;
@@ -128,89 +136,89 @@ async function syncUserRequest(user: User): Promise<{ token: string }> {
 }
 
 export const api = {
-  health: () => request<{ ok: boolean }>("/health"),
+  health: () => request<{ ok: boolean }>("/api/health"),
 
   register: (email: string, password: string, displayName: string) =>
-    request<{ user: User; token: string }>("/auth/register", {
+    request<{ user: User; token: string }>("/api/auth/register", {
       method: "POST",
       body: JSON.stringify({ email, password, displayName }),
     }),
 
   login: (email: string, password: string) =>
-    request<{ user: User; token: string }>("/auth/login", {
+    request<{ user: User; token: string }>("/api/auth/login", {
       method: "POST",
       body: JSON.stringify({ email, password }),
     }),
 
   google: () =>
-    request<{ user: User; token: string }>("/auth/google", { method: "POST" }),
+    request<{ user: User; token: string }>("/api/auth/google", { method: "POST" }),
 
   /** Links Firebase user to API JWT for AI routes */
   syncUser: syncUserRequest,
 
-  me: () => request<{ user: User }>("/auth/me"),
+  me: () => request<{ user: User }>("/api/auth/me"),
 
-  deleteMe: () => request<void>("/auth/me", { method: "DELETE" }),
+  deleteMe: () => request<void>("/api/auth/me", { method: "DELETE" }),
 
-  getItems: () => request<{ items: ClothingItem[] }>("/items"),
+  getItems: () => request<{ items: ClothingItem[] }>("/api/items"),
 
   createItem: (item: Omit<ClothingItem, "id" | "userId" | "createdAt" | "usageCount">) =>
-    request<{ item: ClothingItem }>("/items", {
+    request<{ item: ClothingItem }>("/api/items", {
       method: "POST",
       body: JSON.stringify(item),
     }),
 
   updateItem: (id: string, patch: Partial<ClothingItem>) =>
-    request<{ item: ClothingItem }>(`/items/${id}`, {
+    request<{ item: ClothingItem }>(`/api/items/${id}`, {
       method: "PATCH",
       body: JSON.stringify(patch),
     }),
 
   deleteItem: (id: string) =>
-    request<void>(`/items/${id}`, { method: "DELETE" }),
+    request<void>(`/api/items/${id}`, { method: "DELETE" }),
 
-  getOutfits: () => request<{ outfits: Outfit[] }>("/outfits"),
+  getOutfits: () => request<{ outfits: Outfit[] }>("/api/outfits"),
 
   generateOutfit: (mode: Outfit["occasion"], items?: ClothingItem[], profile?: UserProfile) =>
-    request<{ name: string; items: Outfit["items"]; notes: string }>("/outfits/generate", {
+    request<{ name: string; items: Outfit["items"]; notes: string }>("/api/outfits/generate", {
       method: "POST",
       body: JSON.stringify({ mode, items, profile }),
     }),
 
   createOutfit: (outfit: Outfit) =>
-    request<{ outfit: Outfit }>("/outfits", {
+    request<{ outfit: Outfit }>("/api/outfits", {
       method: "POST",
       body: JSON.stringify(outfit),
     }),
 
   updateOutfit: (id: string, patch: Partial<Outfit>) =>
-    request<{ outfit: Outfit }>(`/outfits/${id}`, {
+    request<{ outfit: Outfit }>(`/api/outfits/${id}`, {
       method: "PATCH",
       body: JSON.stringify(patch),
     }),
 
   deleteOutfit: (id: string) =>
-    request<void>(`/outfits/${id}`, { method: "DELETE" }),
+    request<void>(`/api/outfits/${id}`, { method: "DELETE" }),
 
-  getChat: () => request<{ messages: ChatMessage[] }>("/chat"),
+  getChat: () => request<{ messages: ChatMessage[] }>("/api/chat"),
 
   sendChat: (content: string, items?: ClothingItem[], outfits?: Outfit[], profile?: UserProfile) =>
-    request<{ userMessage: ChatMessage; reply: ChatMessage }>("/chat", {
+    request<{ userMessage: ChatMessage; reply: ChatMessage }>("/api/chat", {
       method: "POST",
       body: JSON.stringify({ content, items, outfits, profile }),
     }),
 
   clearChat: () =>
-    request<{ messages: ChatMessage[] }>("/chat", { method: "DELETE" }),
+    request<{ messages: ChatMessage[] }>("/api/chat", { method: "DELETE" }),
 
   analyzeDiscoveryItem: <T>(input: unknown) =>
-    request<T>("/discover/analyze", {
+    request<T>("/api/discover/analyze", {
       method: "POST",
       body: JSON.stringify(input),
     }),
 
   packMyBag: (input: PackRequest) =>
-    request<PackResponse>("/pack", {
+    request<PackResponse>("/api/pack", {
       method: "POST",
       body: JSON.stringify(input),
     }),
