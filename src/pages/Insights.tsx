@@ -46,9 +46,9 @@ export function Insights() {
   const styledOutfits = useMemo(() => countStyledOutfits(items), [items]);
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-6">
+    <div className="mx-auto max-w-[1400px] space-y-5 md:space-y-6">
       {/* Topline */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         <KPI icon={Shirt} label="Pieces" value={items.length} />
         <KPI icon={Flame} label="Total wears" value={totalWears} />
         <KPI icon={Leaf} label="Styled outfits" value={styledOutfits} />
@@ -172,9 +172,9 @@ function KPI({
   value: number | string;
 }) {
   return (
-    <div className="p-5 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]">
+    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5">
       <Icon className="h-4 w-4 text-[color:var(--color-gold)]" />
-      <p className="font-serif text-3xl text-[color:var(--color-ink)] mt-3">{value}</p>
+      <p className="mt-3 font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">{value}</p>
       <p className="text-[10px] uppercase tracking-widest text-[color:var(--color-ink-muted)] mt-1">
         {label}
       </p>
@@ -194,11 +194,11 @@ function Panel({
   children: React.ReactNode;
 }) {
   return (
-    <div className="p-6 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]">
+    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-6">
       <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-ink-dim)]">
         {eyebrow}
       </p>
-      <h3 className="font-serif text-2xl text-[color:var(--color-ink)] mt-1">{title}</h3>
+      <h3 className="mt-1 font-serif text-xl text-[color:var(--color-ink)] md:text-2xl">{title}</h3>
       <p className="text-sm text-[color:var(--color-ink-muted)] mt-1 mb-5">{subtitle}</p>
       {children}
     </div>

@@ -194,10 +194,10 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-x-4 md:inset-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[720px] max-h-[90vh] overflow-y-auto no-scrollbar bg-[color:var(--color-bg-elev)] border border-[color:var(--color-border)] rounded-2xl z-50 shadow-2xl"
+            className="fixed inset-x-3 max-h-[90vh] overflow-y-auto rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] shadow-2xl no-scrollbar z-50 md:inset-auto md:left-1/2 md:top-1/2 md:w-[720px] md:-translate-x-1/2 md:-translate-y-1/2"
           >
             <form onSubmit={submit}>
-              <div className="flex items-start justify-between p-6 border-b border-[color:var(--color-border-soft)]">
+              <div className="flex items-start justify-between border-b border-[color:var(--color-border-soft)] p-4 md:p-6">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="h-4 w-4 text-[color:var(--color-gold)]" />
@@ -205,7 +205,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
                       Add to wardrobe
                     </p>
                   </div>
-                  <h2 className="font-serif text-2xl text-[color:var(--color-ink)]">
+                  <h2 className="font-serif text-xl text-[color:var(--color-ink)] md:text-2xl">
                     A new piece
                   </h2>
                 </div>
@@ -218,7 +218,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
                 </button>
               </div>
 
-              <div className="p-6 grid md:grid-cols-2 gap-6">
+              <div className="grid gap-5 p-4 md:grid-cols-2 md:gap-6 md:p-6">
                 {/* Upload */}
                 <div>
                   <label className="text-xs uppercase tracking-widest text-[color:var(--color-ink-dim)]">
@@ -366,18 +366,18 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
                 </div>
               </div>
 
-              <div className="p-6 border-t border-[color:var(--color-border-soft)] flex items-center justify-end gap-3">
+              <div className="flex flex-col items-stretch justify-end gap-3 border-t border-[color:var(--color-border-soft)] p-4 sm:flex-row sm:items-center md:p-6">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="h-10 px-5 rounded-full text-sm text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)] transition-colors"
+                  className="h-10 rounded-full px-5 text-sm text-[color:var(--color-ink-muted)] transition-colors hover:text-[color:var(--color-ink)]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={!imageUrl || !name || !color}
-                  className="h-10 px-6 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] text-[color:var(--color-bg)] font-medium text-sm disabled:opacity-40 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/30 transition-shadow"
+                  className="h-10 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-6 text-sm font-medium text-[color:var(--color-bg)] transition-shadow hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/30 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
                 >
                   Save to wardrobe
                 </button>

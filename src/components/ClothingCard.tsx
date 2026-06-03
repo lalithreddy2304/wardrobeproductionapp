@@ -22,7 +22,7 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
     >
       <div
         onClick={() => onClick?.(item)}
-        className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-[color:var(--color-surface)] border border-[color:var(--color-border-soft)] cursor-pointer"
+        className="relative aspect-[4/5] cursor-pointer overflow-hidden rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] md:rounded-2xl"
       >
         <img
           src={item.imageUrl}
@@ -33,8 +33,8 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
 
         {/* Top actions */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-          <span className="text-[10px] uppercase tracking-[0.22em] text-[color:var(--color-ink)]/90 bg-black/40 backdrop-blur-md rounded-full px-2.5 py-1 border border-white/10">
+        <div className="absolute left-2 right-2 top-2 flex items-center justify-between md:left-3 md:right-3 md:top-3">
+          <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] text-[color:var(--color-ink)]/90 backdrop-blur-md md:px-2.5 md:py-1 md:text-[10px] md:tracking-[0.22em]">
             {titleCase(item.category)}
           </span>
           <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -77,8 +77,8 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
         )}
 
         {/* Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="font-serif text-lg text-white leading-tight drop-shadow">
+        <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
+          <h3 className="font-serif text-base leading-tight text-white drop-shadow md:text-lg">
             {item.name}
           </h3>
           <div className="flex items-center gap-2 mt-1.5">

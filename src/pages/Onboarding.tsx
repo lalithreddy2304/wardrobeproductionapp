@@ -89,7 +89,7 @@ const genderLabels: Record<Gender, string> = {
 };
 
 const cardBase =
-  "rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-6 cursor-pointer transition-all hover:border-[color:var(--color-gold)]/40 text-left";
+  "rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-6 cursor-pointer transition-all hover:border-[color:var(--color-gold)]/40 text-left";
 const selectedCard =
   "border-[color:var(--color-gold)] bg-[color:var(--color-gold)]/10";
 
@@ -154,7 +154,7 @@ export function Onboarding() {
         <div className="absolute inset-0 bg-gradient-to-br from-[color:var(--color-bg)] via-[color:var(--color-bg)]/95 to-[color:var(--color-bg-elev)]" />
       </div>
 
-      <div className="relative mx-auto flex min-h-screen w-full max-w-5xl flex-col px-6 py-8 md:px-10">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 md:px-10 md:py-8">
         <header className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="gold-ring flex h-10 w-10 items-center justify-center rounded-lg">
@@ -176,7 +176,7 @@ export function Onboarding() {
           </div>
         </header>
 
-        <section className="grid flex-1 place-items-center py-10">
+        <section className="grid flex-1 place-items-center py-8 md:py-10">
           <div className="w-full max-w-3xl">
             <AnimatePresence mode="wait">
               {step === 1 && (
@@ -270,7 +270,7 @@ export function Onboarding() {
 
               {step === 4 && selectedSkinTone && gender && styleGoal && (
                 <StepPanel key="ready" title="Your style profile is ready." subtitle="One last choice before you enter your wardrobe.">
-                  <div className="mx-auto max-w-xl rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-6 shadow-2xl shadow-black/20">
+                  <div className="mx-auto max-w-xl rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 shadow-2xl shadow-black/20 md:p-6">
                     <SummaryRow label="Goal" value={goalLabels[styleGoal]} />
                     <SummaryRow label="Style" value={genderLabels[gender]} />
                     <div className="flex items-center justify-between gap-4 border-t border-[color:var(--color-border-soft)] py-4">
@@ -303,7 +303,7 @@ export function Onboarding() {
                   <button
                     type="button"
                     onClick={() => advance(5)}
-                    className="mx-auto mt-8 flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-8 text-sm font-medium text-[color:var(--color-bg)] shadow-lg shadow-[color:var(--color-gold-shadow)]/30 transition-transform hover:scale-[1.02] disabled:opacity-60"
+                    className="mx-auto mt-8 flex h-12 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-8 text-sm font-medium text-[color:var(--color-bg)] shadow-lg shadow-[color:var(--color-gold-shadow)]/30 transition-transform hover:scale-[1.02] disabled:opacity-60 sm:w-auto"
                   >
                     Choose starter option
                     <ArrowRight className="h-4 w-4" />
@@ -318,10 +318,10 @@ export function Onboarding() {
                       type="button"
                       onClick={() => complete(true)}
                       disabled={saving}
-                      className={`${cardBase} min-h-44 disabled:cursor-not-allowed disabled:opacity-60`}
+                      className={`${cardBase} min-h-36 disabled:cursor-not-allowed disabled:opacity-60 md:min-h-44`}
                     >
                       <Shirt className="mb-5 h-7 w-7 text-[color:var(--color-gold)]" />
-                      <span className="block font-serif text-3xl leading-tight">Start with sample clothes</span>
+                      <span className="block font-serif text-2xl leading-tight md:text-3xl">Start with sample clothes</span>
                       <span className="mt-4 block text-sm leading-6 text-[color:var(--color-ink-muted)]">
                         See outfits and styling tools with a ready-made starter wardrobe.
                       </span>
@@ -330,10 +330,10 @@ export function Onboarding() {
                       type="button"
                       onClick={() => complete(false)}
                       disabled={saving}
-                      className={`${cardBase} min-h-44 disabled:cursor-not-allowed disabled:opacity-60`}
+                      className={`${cardBase} min-h-36 disabled:cursor-not-allowed disabled:opacity-60 md:min-h-44`}
                     >
                       <Plus className="mb-5 h-7 w-7 text-[color:var(--color-gold)]" />
-                      <span className="block font-serif text-3xl leading-tight">Start fresh</span>
+                      <span className="block font-serif text-2xl leading-tight md:text-3xl">Start fresh</span>
                       <span className="mt-4 block text-sm leading-6 text-[color:var(--color-ink-muted)]">
                         Open an empty wardrobe and add only your own pieces.
                       </span>
@@ -385,7 +385,7 @@ function StepPanel({
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
     >
       <div className="mb-10 text-center">
-        <h1 className="font-serif text-4xl leading-tight md:text-6xl">{title}</h1>
+        <h1 className="font-serif text-3xl leading-tight md:text-6xl">{title}</h1>
         <p className="mt-3 text-[color:var(--color-ink-muted)]">{subtitle}</p>
       </div>
       {children}

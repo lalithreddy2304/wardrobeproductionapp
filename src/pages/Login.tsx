@@ -130,7 +130,7 @@ export function AuthShell({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen grid lg:grid-cols-2">
+    <div className="grid min-h-screen overflow-x-hidden lg:grid-cols-2">
       {/* Left: image / brand */}
       <div className="hidden lg:relative lg:block">
         <img src={image} alt="" className="absolute inset-0 w-full h-full object-cover" />
@@ -154,21 +154,21 @@ export function AuthShell({
       </div>
 
       {/* Right: form */}
-      <div className="relative flex items-center justify-center p-6 md:p-10">
+      <div className="relative flex items-center justify-center p-4 sm:p-6 md:p-10">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
           className="w-full max-w-md"
         >
-          <div className="lg:hidden flex items-center gap-3 mb-10">
+          <div className="mb-8 flex items-center gap-3 lg:hidden md:mb-10">
             <div className="h-10 w-10 rounded-lg gold-ring flex items-center justify-center">
               <span className="text-[color:var(--color-gold)] font-serif text-xl leading-none">M</span>
             </div>
             <p className="font-serif text-lg text-[color:var(--color-ink)]">My Wardrobe</p>
           </div>
           <div className="mb-8">
-            <h1 className="font-serif text-[36px] leading-tight text-[color:var(--color-ink)]">
+            <h1 className="font-serif text-[32px] leading-tight text-[color:var(--color-ink)] md:text-[36px]">
               {title}
             </h1>
             <p className="text-[color:var(--color-ink-muted)] mt-2">{subtitle}</p>

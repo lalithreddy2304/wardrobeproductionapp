@@ -78,7 +78,7 @@ export function Dashboard() {
   }
 
   return (
-    <div className="mx-auto max-w-[1200px] space-y-6">
+    <div className="mx-auto max-w-[1200px] space-y-5 md:space-y-6">
       <HeroSection
         greeting={greeting}
         firstName={firstName}
@@ -145,21 +145,21 @@ function HeroSection({
   return (
     <motion.section
       {...sectionMotion(0)}
-      className="relative overflow-hidden rounded-3xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]"
+      className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] md:rounded-3xl"
     >
       <div className="absolute inset-0 aurora-bg opacity-70" />
-      <div className="relative grid gap-8 p-6 md:grid-cols-[1fr_220px] md:p-9">
-        <div className="flex flex-col justify-between gap-6">
+      <div className="relative grid gap-6 p-5 md:grid-cols-[1fr_220px] md:gap-8 md:p-9">
+        <div className="flex flex-col justify-between gap-5 md:gap-6">
           <div>
-            <h1 className="font-serif text-[42px] leading-none text-[color:var(--color-ink)] md:text-[58px]">
+            <h1 className="font-serif text-[34px] leading-tight text-[color:var(--color-ink)] md:text-[58px] md:leading-none">
               {greeting}, {firstName}.
             </h1>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-[color:var(--color-ink-muted)]">
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[color:var(--color-ink-muted)] md:mt-4 md:text-base">
               {hero.subtitle}
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
             {hero.actions.map((action) => (
               <button
                 key={action.path}
@@ -167,8 +167,8 @@ function HeroSection({
                 onClick={() => onNavigate(action.path)}
                 className={
                   action.primary
-                    ? "inline-flex h-11 items-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)]"
-                    : "inline-flex h-11 items-center gap-2 rounded-full border border-[color:var(--color-border)] px-5 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50"
+                    ? "inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
+                    : "inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[color:var(--color-border)] px-5 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50 sm:w-auto"
                 }
               >
                 {action.label}
@@ -203,12 +203,12 @@ function TodaysOutfitSection({
   return (
     <motion.section
       {...sectionMotion(1)}
-      className="rounded-2xl border border-[color:var(--color-border-soft)] border-l-4 border-l-[color:var(--color-gold)] bg-[color:var(--color-surface)] p-6"
+      className="rounded-2xl border border-[color:var(--color-border-soft)] border-l-4 border-l-[color:var(--color-gold)] bg-[color:var(--color-surface)] p-4 md:p-6"
     >
       {!latestOutfit ? (
-        <div className="flex flex-col items-center justify-center py-10 text-center">
+        <div className="flex flex-col items-center justify-center py-8 text-center md:py-10">
           <HangerIllustration />
-          <h2 className="mt-5 font-serif text-3xl text-[color:var(--color-ink)]">
+          <h2 className="mt-5 font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">
             No saved looks yet
           </h2>
           <p className="mt-2 text-sm text-[color:var(--color-ink-muted)]">
@@ -217,7 +217,7 @@ function TodaysOutfitSection({
           <button
             type="button"
             onClick={() => onNavigate("/generate")}
-            className="mt-6 h-11 rounded-full bg-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)]"
+            className="mt-6 h-11 w-full rounded-full bg-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
           >
             Generate a look →
           </button>
@@ -226,7 +226,7 @@ function TodaysOutfitSection({
         <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
           <div>
             <div className="flex flex-wrap items-center gap-3">
-              <h2 className="font-serif text-3xl text-[color:var(--color-ink)] md:text-4xl">
+              <h2 className="font-serif text-2xl text-[color:var(--color-ink)] md:text-4xl">
                 {latestOutfit.name}
               </h2>
               <span className="rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] px-3 py-1 text-xs uppercase tracking-widest text-[color:var(--color-gold)]">
@@ -238,18 +238,18 @@ function TodaysOutfitSection({
                 {latestOutfit.notes}
               </p>
             )}
-            <div className="mt-5 flex flex-wrap gap-3">
+            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <button
                 type="button"
                 onClick={() => onNavigate("/generate")}
-                className="h-10 rounded-full bg-[color:var(--color-gold)] px-4 text-sm font-medium text-[color:var(--color-bg)]"
+                className="h-10 w-full rounded-full bg-[color:var(--color-gold)] px-4 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
               >
                 Generate new look
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate("/saved")}
-                className="h-10 rounded-full border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50"
+                className="h-10 w-full rounded-full border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50 sm:w-auto"
               >
                 View all saved
               </button>
@@ -284,7 +284,7 @@ function StatsSection({
   favoriteCount: number;
 }) {
   return (
-    <motion.section {...sectionMotion(2)} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <motion.section {...sectionMotion(2)} className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
       <StatCard value={itemCount} label="Pieces in wardrobe" />
       <StatCard value={combinations === 0 ? "—" : combinations} label="Real outfits" title={combinations === 0 ? "Add tops + bottoms" : undefined} />
       <StatCard value={outfitCount} label="Saved looks" />
@@ -335,13 +335,13 @@ function SmartNudge({
   return (
     <motion.section
       {...sectionMotion(3)}
-      className="flex flex-col gap-4 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5 sm:flex-row sm:items-center sm:justify-between"
+      className="flex flex-col gap-4 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5 sm:flex-row sm:items-center sm:justify-between"
     >
       <p className="text-sm leading-relaxed text-[color:var(--color-ink)]">{nudge.text}</p>
       <button
         type="button"
         onClick={() => onNavigate(nudge.path)}
-        className="h-10 shrink-0 rounded-full border border-[color:var(--color-gold)]/40 px-4 text-sm text-[color:var(--color-gold)] hover:bg-[color:var(--color-gold)]/10"
+        className="h-10 w-full shrink-0 rounded-full border border-[color:var(--color-gold)]/40 px-4 text-sm text-[color:var(--color-gold)] hover:bg-[color:var(--color-gold)]/10 sm:w-auto"
       >
         {nudge.label}
       </button>
@@ -402,7 +402,7 @@ function RecentAdditions({
   return (
     <motion.section {...sectionMotion(5)}>
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 className="font-serif text-3xl text-[color:var(--color-ink)]">Recently added</h2>
+        <h2 className="font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">Recently added</h2>
         <button
           type="button"
           onClick={() => onNavigate("/wardrobe")}
@@ -511,9 +511,9 @@ function StatCard({
   return (
     <div
       title={title}
-      className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5 transition-transform duration-200 hover:-translate-y-0.5"
+      className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 transition-transform duration-200 hover:-translate-y-0.5 md:p-5"
     >
-      <p className="font-serif text-4xl text-[color:var(--color-ink)]">{value}</p>
+      <p className="font-serif text-3xl text-[color:var(--color-ink)] md:text-4xl">{value}</p>
       <p className="mt-2 text-[10px] uppercase tracking-widest text-[color:var(--color-ink-muted)]">
         {label}
       </p>
@@ -541,7 +541,7 @@ function QuickActionCard({
       type="button"
       onClick={disabled ? undefined : onClick}
       title={disabled ? disabledReason : undefined}
-      className={`flex items-center justify-between gap-4 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5 text-left transition-all duration-200 ${
+      className={`flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 text-left transition-all duration-200 md:gap-4 md:p-5 ${
         disabled
           ? "cursor-not-allowed opacity-55"
           : "hover:-translate-y-0.5 hover:border-[color:var(--color-gold)]/40"

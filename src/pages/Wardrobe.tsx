@@ -48,7 +48,7 @@ export function Wardrobe() {
   }, [items]);
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-6">
+    <div className="mx-auto max-w-[1400px] space-y-5 md:space-y-6">
       {/* Toolbar */}
       <div className="flex flex-col md:flex-row md:items-center gap-4">
         <div className="flex-1 flex items-center gap-2 h-11 px-4 rounded-full bg-[color:var(--color-surface)] border border-[color:var(--color-border-soft)] focus-within:border-[color:var(--color-gold)]/40 transition-colors">
@@ -65,13 +65,13 @@ export function Wardrobe() {
             </button>
           )}
         </div>
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 h-11 px-1 rounded-full bg-[color:var(--color-surface)] border border-[color:var(--color-border-soft)]">
+        <div className="grid gap-2 sm:flex sm:items-center">
+          <div className="flex h-11 min-w-0 items-center gap-2 rounded-full border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] px-1">
             <SlidersHorizontal className="h-4 w-4 ml-3 text-[color:var(--color-ink-dim)]" />
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortKey)}
-              className="bg-transparent text-sm text-[color:var(--color-ink)] outline-none pr-3 cursor-pointer"
+              className="min-w-0 flex-1 cursor-pointer bg-transparent pr-3 text-sm text-[color:var(--color-ink)] outline-none"
             >
               <option value="recent">Recently added</option>
               <option value="name">By name</option>
@@ -80,7 +80,7 @@ export function Wardrobe() {
           </div>
           <button
             onClick={() => setFavoritesOnly(!favoritesOnly)}
-            className={`h-11 px-4 rounded-full border text-sm transition-colors ${
+            className={`h-11 w-full rounded-full border px-4 text-sm transition-colors sm:w-auto ${
               favoritesOnly
                 ? "border-[color:var(--color-gold)]/50 bg-[color:var(--color-gold)]/10 text-[color:var(--color-gold-bright)]"
                 : "border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)]"
@@ -90,7 +90,7 @@ export function Wardrobe() {
           </button>
           <button
             onClick={() => setUploadOpen(true)}
-            className="h-11 px-5 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] text-[color:var(--color-bg)] font-medium text-sm flex items-center gap-2 hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/40 transition-shadow"
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] transition-shadow hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/40 sm:w-auto"
           >
             <Plus className="h-4 w-4" /> Add piece
           </button>
@@ -120,7 +120,7 @@ export function Wardrobe() {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="py-20 text-center rounded-2xl border border-dashed border-[color:var(--color-border)]">
+        <div className="rounded-2xl border border-dashed border-[color:var(--color-border)] px-4 py-14 text-center md:py-20">
           <p className="font-serif text-2xl text-[color:var(--color-ink)]">
             {query ? "No pieces match your search" : "Nothing here yet"}
           </p>
@@ -132,7 +132,7 @@ export function Wardrobe() {
           {!query && (
             <button
               onClick={() => setUploadOpen(true)}
-              className="mt-5 h-10 px-5 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] text-[color:var(--color-bg)] text-sm font-medium"
+              className="mt-5 h-10 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
             >
               Upload a piece
             </button>
@@ -141,7 +141,7 @@ export function Wardrobe() {
       ) : (
         <motion.div
           layout
-          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+          className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:gap-4 lg:grid-cols-4 xl:grid-cols-5"
         >
           <AnimatePresence mode="popLayout">
             {filtered.map((i) => (
@@ -186,12 +186,12 @@ export function Wardrobe() {
                   <X className="h-4 w-4 text-white" />
                 </button>
               </div>
-              <div className="p-6 space-y-4">
+              <div className="space-y-4 p-5 md:p-6">
                 <div>
                   <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">
                     {titleCase(detail.category)}
                   </p>
-                  <h3 className="font-serif text-3xl text-[color:var(--color-ink)] mt-1">
+                  <h3 className="mt-1 font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">
                     {detail.name}
                   </h3>
                 </div>
@@ -207,7 +207,7 @@ export function Wardrobe() {
                     </span>
                   ))}
                 </div>
-                <div className="flex gap-2 pt-2">
+                <div className="grid gap-2 pt-2 sm:grid-cols-2">
                   <button
                     onClick={() => {
                       toggleFavoriteItem(detail.id);

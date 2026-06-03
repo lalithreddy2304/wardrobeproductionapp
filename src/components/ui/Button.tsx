@@ -19,7 +19,7 @@ export function Button({
   return (
     <button
       className={cn(
-        "h-10 px-5 rounded-full text-sm font-medium inline-flex items-center justify-center gap-2 transition-all disabled:opacity-40",
+        "inline-flex h-10 w-full items-center justify-center gap-2 rounded-full px-5 text-sm font-medium transition-all disabled:opacity-40 sm:w-auto",
         styles[variant],
         className
       )}

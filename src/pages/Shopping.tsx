@@ -282,7 +282,7 @@ export function Shopping() {
   };
 
   return (
-    <div className="max-w-[1200px] mx-auto">
+    <div className="mx-auto max-w-[1200px]">
       <AnimatePresence mode="wait">
         {phase === "upload" && (
           <motion.div
@@ -290,13 +290,13 @@ export function Shopping() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="space-y-8"
+            className="space-y-6 md:space-y-8"
           >
             <header className="space-y-3">
               <p className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--color-gold)]">
                 Analyse a Piece
               </p>
-              <h2 className="font-serif text-[44px] md:text-[58px] leading-none text-[color:var(--color-ink)]">
+              <h2 className="font-serif text-[34px] leading-tight text-[color:var(--color-ink)] md:text-[58px] md:leading-none">
                 Analyse a Piece
               </h2>
               <p className="max-w-xl text-sm md:text-base text-[color:var(--color-ink-muted)]">
@@ -311,7 +311,7 @@ export function Shopping() {
                 event.preventDefault();
                 onSelectFile(event.dataTransfer.files[0]);
               }}
-              className="relative min-h-[300px] rounded-3xl border-2 border-dashed border-[color:var(--color-border)] hover:border-[color:var(--color-gold)]/40 bg-[color:var(--color-surface)]/55 transition-colors overflow-hidden cursor-pointer"
+              className="relative min-h-[240px] cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-[color:var(--color-border)] bg-[color:var(--color-surface)]/55 transition-colors hover:border-[color:var(--color-gold)]/40 md:min-h-[300px] md:rounded-3xl"
             >
               <input
                 ref={inputRef}
@@ -375,10 +375,10 @@ export function Shopping() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="min-h-[70vh] flex flex-col items-center justify-center text-center"
+            className="flex min-h-[60vh] flex-col items-center justify-center text-center md:min-h-[70vh]"
           >
             <Sparkles className="h-10 w-10 text-[color:var(--color-gold)] animate-pulse mb-5" />
-            <h2 className="font-serif text-4xl text-[color:var(--color-ink)]">
+            <h2 className="font-serif text-3xl text-[color:var(--color-ink)] md:text-4xl">
               Analysing your piece...
             </h2>
             <p className="mt-2 text-sm text-[color:var(--color-ink-muted)]">
@@ -406,11 +406,11 @@ export function Shopping() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="grid gap-8 lg:grid-cols-[420px_1fr]"
+            className="grid gap-5 md:gap-8 lg:grid-cols-[420px_1fr]"
           >
             <aside className="lg:sticky lg:top-8 h-fit space-y-4">
               <img src={uploadedImage} alt={result.detectedItem.name} className="w-full rounded-2xl object-cover aspect-[4/5]" />
-              <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5">
+              <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5">
                 <h2 className="font-serif text-2xl text-[color:var(--color-ink)]">{result.detectedItem.name}</h2>
                 <div className="mt-4 flex flex-wrap gap-2">
                   {[
@@ -454,7 +454,7 @@ export function Shopping() {
                 />
               ) : (
                 <>
-                  <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5">
+                  <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5">
                     <div className="flex items-center justify-between gap-4">
                       <p className="text-sm text-[color:var(--color-ink)]">
                         Pairs with {pairedItems.length} of your {items.length} pieces
@@ -483,7 +483,7 @@ export function Shopping() {
                     )}
                   </div>
 
-                  <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5">
+                  <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5">
                     <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">Outfits this unlocks</p>
                     <p className="mt-2 text-xl text-[color:var(--color-ink)]">{newOutfits} new combinations</p>
                     {exampleOutfits.length > 0 && (
@@ -514,7 +514,7 @@ export function Shopping() {
                   </div>
 
                   {price > 0 && (
-                    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5">
+                    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5">
                       <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">Cost per wear</p>
                       {newOutfits === 0 ? (
                         <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
@@ -540,7 +540,7 @@ export function Shopping() {
                 <button
                   type="button"
                   onClick={reset}
-                  className="h-11 rounded-full border border-[color:var(--color-border)] px-5 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50"
+                  className="h-11 w-full rounded-full border border-[color:var(--color-border)] px-5 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50 sm:w-auto"
                 >
                   Analyse another piece
                 </button>
@@ -577,7 +577,7 @@ function PriceInput({
 
 function InfoBlock({ title, text }: { title: string; text: string }) {
   return (
-    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5">
+    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5">
       <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">{title}</p>
       <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-ink-muted)]">{text}</p>
     </div>

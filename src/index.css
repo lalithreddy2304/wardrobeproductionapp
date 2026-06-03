@@ -28,6 +28,11 @@ html, body, #root {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -100,6 +105,19 @@ body {
 }
 .lift:hover {
   transform: translateY(-3px);
+}
+
+@media (max-width: 767px) {
+  .lift:hover {
+    transform: none;
+  }
+
+  input,
+  textarea,
+  select,
+  button {
+    max-width: 100%;
+  }
 }
 
 /* Hide scrollbar utility */

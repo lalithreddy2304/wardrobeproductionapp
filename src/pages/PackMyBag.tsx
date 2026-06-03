@@ -61,13 +61,13 @@ export function PackMyBag() {
   };
 
   return (
-    <div className="mx-auto max-w-[1200px] space-y-6">
-      <section className="rounded-3xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-6 md:p-8">
-        <div className="mb-7">
+    <div className="mx-auto max-w-[1200px] space-y-5 md:space-y-6">
+      <section className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:rounded-3xl md:p-8">
+        <div className="mb-5 md:mb-7">
           <p className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--color-gold)]">
             Travel planner
           </p>
-          <h1 className="mt-2 font-serif text-4xl leading-tight text-[color:var(--color-ink)] md:text-5xl">
+          <h1 className="mt-2 font-serif text-3xl leading-tight text-[color:var(--color-ink)] md:text-5xl">
             Pack My Bag
           </h1>
         </div>
@@ -95,7 +95,7 @@ export function PackMyBag() {
           <button
             type="submit"
             disabled={loading || activities.length === 0}
-            className="h-11 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-6 text-sm font-medium text-[color:var(--color-bg)] disabled:cursor-not-allowed disabled:opacity-50"
+            className="h-11 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-6 text-sm font-medium text-[color:var(--color-bg)] disabled:cursor-not-allowed disabled:opacity-50 lg:w-auto"
           >
             {loading ? "Packing..." : "Build packing list"}
           </button>
@@ -136,7 +136,7 @@ export function PackMyBag() {
 
       {result && (
         <section className="space-y-5">
-          <div className="flex rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-1">
+          <div className="no-scrollbar flex overflow-x-auto rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-1">
             {[
               { id: "pack", label: "What to Pack" },
               { id: "days", label: "Day by Day" },
@@ -146,7 +146,7 @@ export function PackMyBag() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id as "pack" | "days" | "shopping")}
-                className={`h-10 flex-1 rounded-xl px-3 text-sm transition-colors ${
+                className={`h-10 min-w-max flex-1 rounded-xl px-3 text-sm transition-colors ${
                   activeTab === tab.id
                     ? "bg-[color:var(--color-bg-elev)] text-[color:var(--color-ink)]"
                     : "text-[color:var(--color-ink-muted)] hover:text-[color:var(--color-ink)]"
@@ -190,7 +190,7 @@ export function PackMyBag() {
           {activeTab === "shopping" && (
             <Section title="Shopping list">
               {result.missingItems.length === 0 ? (
-                <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5 text-sm text-[color:var(--color-ink-muted)]">
+                <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 text-sm text-[color:var(--color-ink-muted)] md:p-5">
                   Everything can be covered from your wardrobe.
                 </div>
               ) : (
@@ -216,7 +216,7 @@ export function PackMyBag() {
                       <button
                         type="button"
                         onClick={() => navigate("/shopping")}
-                        className="h-10 rounded-full border border-[color:var(--color-gold)]/40 px-4 text-sm text-[color:var(--color-gold)] hover:bg-[color:var(--color-gold)]/10"
+                        className="h-10 w-full rounded-full border border-[color:var(--color-gold)]/40 px-4 text-sm text-[color:var(--color-gold)] hover:bg-[color:var(--color-gold)]/10 sm:w-auto"
                       >
                         Find this →
                       </button>
@@ -235,7 +235,7 @@ export function PackMyBag() {
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div>
-      <h2 className="mb-4 font-serif text-3xl text-[color:var(--color-ink)]">{title}</h2>
+      <h2 className="mb-4 font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">{title}</h2>
       {children}
     </div>
   );
@@ -244,14 +244,14 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 function QuantityCard({ item }: { item: PackQuantity }) {
   const Icon = quantityIcon(item);
   return (
-    <div className="flex items-center justify-between gap-4 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5">
+    <div className="flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:gap-4 md:p-5">
       <div className="flex min-w-0 items-center gap-3">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[color:var(--color-bg-elev)]">
           <Icon className="h-5 w-5 text-[color:var(--color-gold)]" />
         </span>
         <p className="truncate text-sm font-medium text-[color:var(--color-ink)]">{item.label}</p>
       </div>
-      <span className="font-serif text-4xl leading-none text-[color:var(--color-gold)]">
+      <span className="font-serif text-3xl leading-none text-[color:var(--color-gold)] md:text-4xl">
         {item.quantity}
       </span>
     </div>
@@ -333,7 +333,7 @@ function DayCard({ day, result }: { day: DayOutfitPlan; result: PackResponse }) 
   };
 
   return (
-    <article className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5">
+    <article className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-xs uppercase tracking-widest text-[color:var(--color-gold)]">

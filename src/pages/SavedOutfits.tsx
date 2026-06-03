@@ -37,9 +37,9 @@ export function SavedOutfits() {
   };
 
   return (
-    <div className="max-w-[1400px] mx-auto space-y-6">
+    <div className="mx-auto max-w-[1400px] space-y-5 md:space-y-6">
       {/* Header metrics */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
         <Metric label="Total looks" value={outfits.length} />
         <Metric label="Favorites" value={outfits.filter((o) => o.isFavorite).length} />
         <Metric
@@ -75,7 +75,7 @@ export function SavedOutfits() {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="py-20 text-center rounded-2xl border border-dashed border-[color:var(--color-border)]">
+        <div className="rounded-2xl border border-dashed border-[color:var(--color-border)] px-4 py-14 text-center md:py-20">
           <Heart className="h-5 w-5 text-[color:var(--color-gold)] mx-auto mb-3" />
           <p className="font-serif text-2xl text-[color:var(--color-ink)]">No looks here yet</p>
           <p className="text-sm text-[color:var(--color-ink-muted)] mt-2">
@@ -89,7 +89,7 @@ export function SavedOutfits() {
       ) : (
         <motion.div
           layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"
+          className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-5 lg:grid-cols-3"
         >
           <AnimatePresence mode="popLayout">
             {filtered.map((o) => (
@@ -111,8 +111,8 @@ export function SavedOutfits() {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="p-4 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]">
-      <p className="font-serif text-2xl text-[color:var(--color-ink)]">{value}</p>
+    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-3 md:p-4">
+      <p className="font-serif text-xl text-[color:var(--color-ink)] md:text-2xl">{value}</p>
       <p className="text-[10px] uppercase tracking-widest text-[color:var(--color-ink-muted)] mt-0.5">
         {label}
       </p>

@@ -64,11 +64,11 @@ export function OutfitGenerator() {
     : [];
 
   return (
-    <div className="max-w-[1400px] mx-auto">
-      <div className="grid lg:grid-cols-[1fr_380px] gap-6">
-        <div className="relative rounded-3xl overflow-hidden gold-ring min-h-[600px]">
+    <div className="mx-auto max-w-[1400px]">
+      <div className="grid gap-5 lg:grid-cols-[1fr_380px] lg:gap-6">
+        <div className="relative min-h-[520px] overflow-hidden rounded-2xl gold-ring md:min-h-[600px] md:rounded-3xl">
           <div className="absolute inset-0 aurora-bg opacity-60" />
-          <div className="relative p-8 md:p-10 h-full flex flex-col">
+          <div className="relative flex h-full flex-col p-5 md:p-10">
             <div className="flex items-center gap-2 mb-6">
               <Wand2 className="h-4 w-4 text-[color:var(--color-gold)]" />
               <p className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--color-gold)]">Outfit studio</p>
@@ -80,7 +80,7 @@ export function OutfitGenerator() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                className="flex-1 grid md:grid-cols-2 gap-8"
+                className="grid flex-1 gap-6 md:grid-cols-2 md:gap-8"
               >
                 <div className="grid grid-cols-2 gap-3">
                   {resolved.map((item, i) => (
@@ -104,19 +104,19 @@ export function OutfitGenerator() {
                 </div>
                 <div className="flex flex-col justify-between">
                   <div>
-                    <h2 className="font-serif text-[42px] leading-tight text-[color:var(--color-ink)]">{current.name}</h2>
+                    <h2 className="font-serif text-3xl leading-tight text-[color:var(--color-ink)] md:text-[42px]">{current.name}</h2>
                     <p className="text-[color:var(--color-ink-muted)] mt-3 leading-relaxed text-sm">{current.notes}</p>
                   </div>
-                  <div className="mt-6 flex flex-wrap gap-3">
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                     <button
                       onClick={generate}
-                      className="h-11 px-5 rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface)] text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/40 flex items-center gap-2 transition-colors"
+                      className="flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface)] px-5 text-sm text-[color:var(--color-ink)] transition-colors hover:border-[color:var(--color-gold)]/40 sm:w-auto"
                     >
                       <RefreshCw className="h-4 w-4" /> Shuffle
                     </button>
                     <button
                       onClick={save}
-                      className="h-11 px-5 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] text-[color:var(--color-bg)] font-medium text-sm flex items-center gap-2 hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/40 transition-shadow"
+                      className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] transition-shadow hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/40 sm:w-auto"
                     >
                       <Save className="h-4 w-4" /> Save look
                     </button>
@@ -130,7 +130,7 @@ export function OutfitGenerator() {
                 </div>
                 {needsMoreItems ? (
                   <>
-                    <h3 className="font-serif text-3xl text-[color:var(--color-ink)] max-w-md">
+                    <h3 className="max-w-md font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">
                       Your wardrobe needs at least 3 pieces to generate an outfit.
                     </h3>
                     <p className="text-[color:var(--color-ink-muted)] mt-3 max-w-md text-sm leading-relaxed">
@@ -139,14 +139,14 @@ export function OutfitGenerator() {
                     <button
                       type="button"
                       onClick={() => navigate("/wardrobe")}
-                      className="mt-6 h-11 px-5 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] text-[color:var(--color-bg)] font-medium text-sm hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/40 transition-shadow"
+                      className="mt-6 h-11 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] transition-shadow hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/40 sm:w-auto"
                     >
                       Go to wardrobe
                     </button>
                   </>
                 ) : (
                   <>
-                    <h3 className="font-serif text-3xl text-[color:var(--color-ink)] max-w-sm">
+                    <h3 className="max-w-sm font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">
                       Compose a look that feels like <span className="text-gold-shimmer">you.</span>
                     </h3>
                     <p className="text-[color:var(--color-ink-muted)] mt-3 max-w-md text-sm leading-relaxed">
@@ -161,7 +161,7 @@ export function OutfitGenerator() {
         </div>
 
         <div className="space-y-4">
-          <div className="p-6 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]">
+          <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-6">
             <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-ink-dim)]">Occasion</p>
             <h3 className="font-serif text-xl text-[color:var(--color-ink)] mt-1 mb-4">Set the scene</h3>
             <div className="space-y-2">
@@ -219,7 +219,7 @@ export function OutfitGenerator() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-full bg-[color:var(--color-gold)] text-[color:var(--color-bg)] text-sm font-medium shadow-2xl shadow-[color:var(--color-gold-shadow)]/50 flex items-center gap-2"
+            className="fixed bottom-24 left-1/2 z-50 flex -translate-x-1/2 items-center gap-2 rounded-full bg-[color:var(--color-gold)] px-5 py-3 text-sm font-medium text-[color:var(--color-bg)] shadow-2xl shadow-[color:var(--color-gold-shadow)]/50 md:bottom-8"
           >
             <Save className="h-4 w-4" /> Saved to your looks
           </motion.div>

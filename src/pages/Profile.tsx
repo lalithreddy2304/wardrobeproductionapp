@@ -245,31 +245,31 @@ export function Profile() {
   if (!user) return null;
 
   return (
-    <div className="mx-auto max-w-[1200px] space-y-8">
+    <div className="mx-auto max-w-[1200px] space-y-6 md:space-y-8">
       <motion.section
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-3xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]"
+        className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] md:rounded-3xl"
       >
         <div className="absolute inset-0 aurora-bg opacity-70" />
-        <div className="relative p-6 md:p-8">
-          <div className="flex flex-col gap-6 md:flex-row md:items-center">
+        <div className="relative p-5 md:p-8">
+          <div className="flex flex-col items-center gap-4 text-center md:flex-row md:items-center md:gap-6 md:text-left">
             <Avatar name={user.displayName} photoURL={user.photoURL} size="large" />
             <div className="min-w-0 flex-1">
               {editingName ? (
-                <div className="flex max-w-md gap-2">
+                <div className="grid w-full max-w-md gap-2 sm:flex">
                   <input
                     value={displayName}
                     onChange={(event) => setDisplayName(event.target.value)}
                     className="h-11 flex-1 rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] px-4 text-sm focus-gold"
                   />
-                  <button onClick={saveDisplayName} className="h-11 rounded-full bg-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)]">
+                  <button onClick={saveDisplayName} className="h-11 w-full rounded-full bg-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto">
                     Save
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-wrap items-center gap-3">
-                  <h1 className="font-serif text-4xl leading-none text-[color:var(--color-ink)] md:text-5xl">
+                <div className="flex flex-wrap items-center justify-center gap-2 md:justify-start md:gap-3">
+                  <h1 className="max-w-full break-words font-serif text-3xl leading-tight text-[color:var(--color-ink)] md:text-5xl md:leading-none">
                     {user.displayName}
                   </h1>
                   <button
@@ -286,7 +286,7 @@ export function Profile() {
             </div>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
+          <div className="mt-6 grid gap-3 sm:grid-cols-3 md:mt-8">
             <HeaderStat value={items.length} label="Pieces in wardrobe" />
             <HeaderStat value={outfits.length} label="Outfits saved" />
             <HeaderStat value={chatCount} label="AI conversations" />
@@ -295,7 +295,7 @@ export function Profile() {
       </motion.section>
 
       <AnimatedSection title="Your style identity">
-        <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-6">
+        <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2">
@@ -316,7 +316,7 @@ export function Profile() {
                 setDraftSkinTone(profile.skinTone);
                 setStyleModalOpen(true);
               }}
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-full border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50"
+              className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-full border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50 md:w-auto"
             >
               <Edit3 className="h-4 w-4" />
               Edit
@@ -410,10 +410,10 @@ export function Profile() {
           <motion.div
             initial={{ opacity: 0, scale: 0.96 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="w-full max-w-lg rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-6"
+            className="w-full max-w-lg rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5 md:p-6"
           >
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="font-serif text-3xl">Edit style identity</h2>
+              <h2 className="font-serif text-2xl md:text-3xl">Edit style identity</h2>
               <button onClick={() => setStyleModalOpen(false)} className="h-9 w-9 rounded-full hover:bg-[color:var(--color-bg-elev)]" aria-label="Close">
                 <X className="mx-auto h-4 w-4" />
               </button>
@@ -487,9 +487,9 @@ function buildWardrobeSummary(items: ReturnType<typeof useWardrobe>["items"]) {
 }
 
 function Avatar({ name, photoURL, size }: { name: string; photoURL?: string; size: "small" | "large" }) {
-  const dimension = size === "large" ? "h-24 w-24 text-4xl" : "h-10 w-10 text-base";
+  const dimension = size === "large" ? "h-20 w-20 text-3xl md:h-24 md:w-24 md:text-4xl" : "h-10 w-10 text-base";
   if (photoURL) {
-    return <img src={photoURL} alt="" className={`${dimension} rounded-full object-cover`} />;
+    return <img src={photoURL} alt="" className={`${dimension} shrink-0 rounded-full object-cover ring-1 ring-[color:var(--color-border)]`} />;
   }
 
   return (
@@ -502,7 +502,7 @@ function Avatar({ name, photoURL, size }: { name: string; photoURL?: string; siz
 function AnimatedSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }}>
-      <h2 className="mb-4 font-serif text-3xl text-[color:var(--color-ink)]">{title}</h2>
+      <h2 className="mb-4 font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">{title}</h2>
       {children}
     </motion.section>
   );
@@ -510,8 +510,8 @@ function AnimatedSection({ title, children }: { title: string; children: React.R
 
 function HeaderStat({ value, label }: { value: number; label: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-      <p className="font-serif text-3xl text-[color:var(--color-ink)]">{value}</p>
+    <div className="rounded-2xl border border-white/10 bg-black/20 p-3 md:p-4">
+      <p className="font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">{value}</p>
       <p className="mt-1 text-xs uppercase tracking-widest text-[color:var(--color-ink-muted)]">{label}</p>
     </div>
   );
@@ -535,7 +535,7 @@ function SmallStat({
   icon: React.ComponentType<{ className?: string }>;
 }) {
   return (
-    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-5">
+    <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5">
       <Icon className="h-4 w-4 text-[color:var(--color-gold)]" />
       <p className="mt-4 truncate font-serif text-2xl text-[color:var(--color-ink)]">{value}</p>
       <p className="mt-1 text-[10px] uppercase tracking-widest text-[color:var(--color-ink-muted)]">{label}</p>

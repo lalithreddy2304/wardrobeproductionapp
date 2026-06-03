@@ -259,7 +259,7 @@ export function Stylist() {
   };
 
   return (
-    <div className="mx-auto grid max-w-[1300px] gap-6 lg:grid-cols-[1fr_280px]">
+    <div className="mx-auto grid max-w-[1300px] gap-5 lg:grid-cols-[1fr_280px] lg:gap-6">
       <style>
         {`
           @keyframes stylist-mic-pulse {
@@ -275,15 +275,15 @@ export function Stylist() {
         `}
       </style>
       <section
-        className="flex min-h-[calc(100vh-190px)] flex-col overflow-hidden rounded-3xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]"
+        className="flex min-h-[calc(100vh-220px)] flex-col overflow-hidden rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] md:min-h-[calc(100vh-190px)] md:rounded-3xl"
       >
-        <header className="flex items-center justify-between border-b border-[color:var(--color-border-soft)] px-5 py-4">
+        <header className="flex items-center justify-between gap-3 border-b border-[color:var(--color-border-soft)] px-4 py-3 md:px-5 md:py-4">
           <div>
             <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">
               Personal stylist
             </p>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="font-serif text-2xl text-[color:var(--color-ink)]">
+              <h1 className="font-serif text-xl text-[color:var(--color-ink)] md:text-2xl">
                 Style conversation
               </h1>
               <span className="rounded-full border border-[color:var(--color-gold)]/20 bg-[color:var(--color-gold)]/10 px-2.5 py-0.5 text-[10px] text-[color:var(--color-gold)]">
@@ -303,7 +303,7 @@ export function Stylist() {
         <div
           ref={messagesRef}
           onScroll={onScroll}
-          className="flex-1 overflow-y-auto px-5 py-6"
+          className="flex-1 overflow-y-auto px-4 py-5 md:px-5 md:py-6"
         >
           <div className="mx-auto flex max-w-3xl flex-col gap-5">
             <AnimatePresence initial={false}>
@@ -321,11 +321,11 @@ export function Stylist() {
           </div>
         </div>
 
-        <div className="border-t border-[color:var(--color-border-soft)] px-5 py-4">
+        <div className="border-t border-[color:var(--color-border-soft)] px-4 py-3 md:px-5 md:py-4">
           {!hasSentMessage && (
             <>
               <SuggestionCards onSend={send} disabled={thinking} />
-              <div className="no-scrollbar mb-3 flex gap-2 overflow-x-auto">
+              <div className="no-scrollbar mb-3 flex gap-2 overflow-x-auto pb-1">
                 {quickPrompts.map((prompt) => (
                   <button
                     key={prompt}
@@ -349,7 +349,7 @@ export function Stylist() {
                 event.preventDefault();
                 send();
               }}
-              className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)] p-4 transition-shadow focus-within:border-[color:var(--color-gold)]/40 focus-within:shadow-[0_0_0_3px_rgba(201,168,76,0.1)]"
+              className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)] p-3 transition-shadow focus-within:border-[color:var(--color-gold)]/40 focus-within:shadow-[0_0_0_3px_rgba(201,168,76,0.1)] md:p-4"
             >
               <div className="flex items-end gap-3">
                 <textarea
@@ -463,7 +463,7 @@ function MessageBubble({
           ✦
         </div>
       )}
-      <div className={`max-w-[82%] ${isUser ? "text-right" : "text-left"}`}>
+      <div className={`max-w-[88%] md:max-w-[82%] ${isUser ? "text-right" : "text-left"}`}>
         <div
           className={
             isUser
@@ -548,7 +548,7 @@ function SuggestionCards({
           type="button"
           onClick={() => onSend(card.subtitle)}
           disabled={disabled}
-          className="rounded-2xl border border-[color:var(--color-border-soft)] p-4 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[color:var(--color-gold)]/40 disabled:opacity-50"
+      className="rounded-2xl border border-[color:var(--color-border-soft)] p-3 text-center transition-all duration-200 hover:-translate-y-0.5 hover:border-[color:var(--color-gold)]/40 disabled:opacity-50 md:p-4"
         >
           <span className="block text-2xl">{card.icon}</span>
           <span className="mt-2 block text-sm font-medium text-[color:var(--color-ink)]">
