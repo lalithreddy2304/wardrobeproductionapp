@@ -107,6 +107,16 @@ body {
   transform: translateY(-3px);
 }
 
+.upload-modal-sheet {
+  max-height: calc(100vh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+}
+
+@supports (height: 100dvh) {
+  .upload-modal-sheet {
+    max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  }
+}
+
 @media (max-width: 767px) {
   .lift:hover {
     transform: none;

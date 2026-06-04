@@ -220,18 +220,18 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-md z-50"
+            className="fixed inset-0 z-[90] bg-black/70 backdrop-blur-md"
             onClick={onClose}
           />
           <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.98 }}
+            initial={{ opacity: 0, y: 24, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.98 }}
+            exit={{ opacity: 0, y: 24, scale: 0.98 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-x-3 max-h-[90vh] overflow-y-auto rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] shadow-2xl no-scrollbar z-50 md:inset-auto md:left-1/2 md:top-1/2 md:w-[720px] md:-translate-x-1/2 md:-translate-y-1/2"
+            className="upload-modal-sheet fixed inset-x-0 bottom-0 z-[100] flex overflow-hidden rounded-t-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] shadow-2xl md:inset-auto md:left-1/2 md:top-1/2 md:w-[720px] md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-2xl"
           >
-            <form onSubmit={submit}>
-              <div className="flex items-start justify-between border-b border-[color:var(--color-border-soft)] p-4 md:p-6">
+            <form onSubmit={submit} className="flex min-h-0 w-full flex-col">
+              <div className="shrink-0 flex items-start justify-between border-b border-[color:var(--color-border-soft)] p-4 md:p-6">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <Sparkles className="h-4 w-4 text-[color:var(--color-gold)]" />
@@ -252,9 +252,9 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
                 </button>
               </div>
 
-              <div className="grid gap-5 p-4 md:grid-cols-2 md:gap-6 md:p-6">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 md:grid md:grid-cols-2 md:gap-6 md:p-6">
                 {/* Upload */}
-                <div>
+                <div className="mb-5 md:mb-0">
                   <label className="text-xs uppercase tracking-widest text-[color:var(--color-ink-dim)]">
                     Image
                   </label>
@@ -405,7 +405,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
                 </div>
               </div>
 
-              <div className="flex flex-col items-stretch justify-end gap-3 border-t border-[color:var(--color-border-soft)] p-4 sm:flex-row sm:items-center md:p-6">
+              <div className="sticky bottom-0 flex shrink-0 flex-col items-stretch justify-end gap-3 border-t border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)] p-4 pb-[calc(1rem+env(safe-area-inset-bottom))] sm:flex-row sm:items-center md:p-6">
                 <button
                   type="button"
                   onClick={onClose}
