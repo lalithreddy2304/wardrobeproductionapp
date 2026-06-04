@@ -31,7 +31,7 @@ export async function uploadWardrobeImage(dataUrl: string, userId: string): Prom
 
   console.log("CLOUD_NAME", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
   console.log("UPLOAD_PRESET", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
-  validateCloudinaryConfig(cloudName, uploadPreset);
+  validateCloudinaryConfig(cloudName, uploadPreset, folder);
   validateImageDataUrl(dataUrl);
 
   const formData = new FormData();
@@ -74,7 +74,17 @@ export async function uploadWardrobeImage(dataUrl: string, userId: string): Prom
   return imageUrl;
 }
 
-function validateCloudinaryConfig(cloudName: string | undefined, uploadPreset: string | undefined) {
+function validateCloudinaryConfig(
+  cloudName: string | undefined,
+  uploadPreset: string | undefined,
+  folder: string
+) {
+  console.log("DEBUG CLOUDINARY", {
+    cloudName,
+    uploadPreset,
+    folder,
+    envKeys: Object.keys(import.meta.env).filter(k => k.includes("CLOUDINARY"))
+  });
   if (!cloudName || !uploadPreset) {
     throw new CloudinaryUploadError(
       "Cloudinary is not configured. Add VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET."
