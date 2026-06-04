@@ -16,6 +16,7 @@ import {
   type DocumentData,
 } from "firebase/firestore";
 import { db } from "../lib/firebase";
+import { isDataUrl, uploadWardrobeImage } from "../services/cloudinary";
 import type { ClothingItem } from "../types";
 
 type NewWardrobeItem = Omit<ClothingItem, "id" | "userId" | "createdAt" | "usageCount">;
@@ -95,8 +96,13 @@ export function useWardrobe(userId?: string) {
 
   const addItem = async (item: NewWardrobeItem): Promise<void> => {
     const uid = withUserId("create");
+    const imageUrl = isDataUrl(item.imageUrl)
+      ? await uploadWardrobeImage(item.imageUrl, uid)
+      : item.imageUrl;
+
     await addDoc(collection(db, "wardrobeItems"), {
       ...item,
+      imageUrl,
       userId: uid,
       usageCount: 0,
       createdAt: serverTimestamp(),

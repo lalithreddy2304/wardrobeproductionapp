@@ -11,10 +11,9 @@ import {
   writeBatch,
   type DocumentData,
 } from "firebase/firestore";
-import { ref, uploadString, getDownloadURL } from "firebase/storage";
-import { getFirebaseDb, getFirebaseStorage } from "../../lib/firebase";
+import { getFirebaseDb } from "../../lib/firebase";
 import type { ClothingItem, Outfit, ChatMessage, Gender } from "../../types";
-import { uid } from "../../lib/utils";
+import { isDataUrl, uploadWardrobeImage } from "../cloudinary";
 
 const COL = {
   items: "wardrobeItems",
@@ -22,7 +21,6 @@ const COL = {
   chat: "aiHistory",
   users: "users",
 } as const;
-const MAX_INLINE_FIRESTORE_IMAGE_CHARS = 800_000;
 
 const MALE_SEED_ITEM_NAMES = new Set([
   "White Oxford Shirt",
@@ -119,31 +117,15 @@ export async function createItem(
     collection: COL.items,
     payload: summarizeItemForLog(input),
   });
-  if (imageUrl.startsWith("data:")) {
-    const path = `users/${userId}/items/${uid("img_")}.jpg`;
-    const storageRef = ref(getFirebaseStorage(), path);
-    console.info("[wardrobe:firebase] Storage upload endpoint called", {
-      path,
+  if (isDataUrl(imageUrl)) {
+    console.info("[wardrobe:firebase] Uploading wardrobe image to Cloudinary", {
+      userId,
       imageLength: imageUrl.length,
     });
-    try {
-      await uploadString(storageRef, imageUrl, "data_url");
-      imageUrl = await getDownloadURL(storageRef);
-      console.info("[wardrobe:firebase] Storage upload result", {
-        path,
-        imageUrl: summarizeImageUrl(imageUrl),
-      });
-    } catch (error) {
-      console.error("[wardrobe:firebase] Storage upload failed; continuing to database insert", {
-        path,
-        error: error instanceof Error ? error.message : error,
-      });
-      imageUrl = imageUrl.length <= MAX_INLINE_FIRESTORE_IMAGE_CHARS ? imageUrl : "";
-      console.warn("[wardrobe:firebase] Image URL fallback selected", {
-        fallback: imageUrl ? "inline-data-url" : "empty-image-url",
-        originalImageLength: input.imageUrl.length,
-      });
-    }
+    imageUrl = await uploadWardrobeImage(imageUrl, userId);
+    console.info("[wardrobe:firebase] Cloudinary image URL ready", {
+      imageUrl: summarizeImageUrl(imageUrl),
+    });
   }
   const payload = {
     userId,

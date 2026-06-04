@@ -73,6 +73,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
   const [categoryHighConfidence, setCategoryHighConfidence] = useState(false);
   const [genderMismatch, setGenderMismatch] = useState(false);
   const [saveError, setSaveError] = useState("");
+  const [saveLoading, setSaveLoading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
@@ -87,6 +88,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
     setCategoryHighConfidence(false);
     setGenderMismatch(false);
     setSaveError("");
+    setSaveLoading(false);
   };
 
   const analyzeImage = async (file: File, dataUrl: string) => {
@@ -171,6 +173,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
       color,
       tags,
     });
+    if (saveLoading) return;
     if (!imageUrl || !name || !color) {
       console.warn("[wardrobe:save] Save blocked by frontend validation", {
         hasImageUrl: Boolean(imageUrl),
@@ -195,6 +198,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
       imageUrl: summarizeImageUrl(payload.imageUrl),
     });
     setSaveError("");
+    setSaveLoading(true);
     try {
       await onSubmit(payload);
       reset();
@@ -203,6 +207,8 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
       const message = error instanceof Error ? error.message : "Could not save this item";
       console.error("[wardrobe:save] Save failed before modal close", error);
       setSaveError(message);
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -409,10 +415,10 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
                 </button>
                 <button
                   type="submit"
-                  disabled={!imageUrl || !name || !color}
+                  disabled={!imageUrl || !name || !color || saveLoading}
                   className="h-10 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-6 text-sm font-medium text-[color:var(--color-bg)] transition-shadow hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/30 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
                 >
-                  Save to wardrobe
+                  {saveLoading ? "Saving..." : "Save to wardrobe"}
                 </button>
               </div>
             </form>

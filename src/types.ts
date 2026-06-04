@@ -29,7 +29,7 @@ export type ClothingItem = {
   category: Category;
   color: string;
   tags: string[];
-  imageUrl: string; // data URL or remote URL
+  imageUrl: string; // Cloudinary URL or seeded remote URL
   usageCount: number;
   createdAt: number;
   isFavorite?: boolean;

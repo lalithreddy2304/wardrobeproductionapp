@@ -6,7 +6,8 @@
 |---------|------------------------|
 | **Auth** | Login with email or Google |
 | **Firestore** | Database for clothes, outfits, chat |
-| **Storage** | Image uploads (instead of huge base64 strings) |
+
+Wardrobe images are hosted by Cloudinary. Firebase Storage is not used.
 
 ## 1. Create project
 
@@ -24,9 +25,12 @@
 VITE_FIREBASE_API_KEY=...
 VITE_FIREBASE_AUTH_DOMAIN=...
 VITE_FIREBASE_PROJECT_ID=...
-VITE_FIREBASE_STORAGE_BUCKET=...
 VITE_FIREBASE_MESSAGING_SENDER_ID=...
 VITE_FIREBASE_APP_ID=...
+
+VITE_CLOUDINARY_CLOUD_NAME=...
+VITE_CLOUDINARY_UPLOAD_PRESET=...
+VITE_CLOUDINARY_FOLDER=wardrobe
 ```
 
 These are **public** — that's normal. Security = Firestore rules + Auth.
@@ -43,10 +47,12 @@ These are **public** — that's normal. Security = Firestore rules + Auth.
 2. Start in **test mode** for dev (then deploy `firestore.rules` from project root)
 3. Create composite indexes if prompted (userId + createdAt)
 
-## 5. Enable Storage
+## 5. Configure Cloudinary uploads
 
-1. Build → **Storage** → Get started
-2. Use default bucket
+1. In Cloudinary, create or choose a cloud.
+2. Create an unsigned image upload preset.
+3. Add `VITE_CLOUDINARY_CLOUD_NAME` and `VITE_CLOUDINARY_UPLOAD_PRESET` to `.env.local`.
+4. Optionally set `VITE_CLOUDINARY_FOLDER`; otherwise uploads use `wardrobe/{userId}`.
 
 ## 6. Deploy security rules
 

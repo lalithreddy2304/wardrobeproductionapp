@@ -17,8 +17,15 @@
      │ Firebase           │         │ Express API (server)│
      │ • Auth             │         │ • AI only (secrets) │
      │ • Firestore        │         │ • GROQ / OPENAI     │
-     │ • Storage (images) │         │   keys live HERE    │
      └────────────────────┘         └─────────────────────┘
+                │
+                ▼
+     ┌────────────────────┐
+     │ Cloudinary         │
+     │ • Wardrobe images  │
+     │ • URL saved in     │
+     │   imageUrl         │
+     └────────────────────┘
 ```
 
 ## Why you need a backend for AI
@@ -28,6 +35,7 @@
 | UI, routing | Frontend | Fast, interactive |
 | Login (Firebase) | Frontend + Firebase | Google handles passwords |
 | Wardrobe data | Firestore or SQLite API | Persistent database |
+| Wardrobe images | Cloudinary | Hosted image URLs stored in `imageUrl` |
 | **OpenAI / Groq key** | **Server only** | If exposed in frontend, anyone can steal it and charge your card |
 
 **Rule:** Anything that costs money or must stay secret → server `.env`, never `VITE_*`.
@@ -60,7 +68,8 @@ src/
   services/
     api.ts        → HTTP client for Express
     data/         → Picks Firebase or API automatically
-    firebase/     → Firestore, Storage helpers
+    firebase/     → Firestore helpers
+    cloudinary.ts → Cloudinary image upload helper
   lib/
     firebase.ts   → Firebase app init
 
@@ -80,6 +89,14 @@ server/
 3. Firebase returns user + ID token
 4. `onAuthStateChanged` updates React state
 5. `WardrobeContext` loads items from Firestore `wardrobeItems` where `userId == uid`
+
+### Add wardrobe item
+
+1. User selects a JPG, PNG, or WebP image in `UploadModal`
+2. Client validates file type and size
+3. `services/cloudinary.ts` uploads the image to Cloudinary
+4. Cloudinary returns a hosted URL
+5. Firestore stores wardrobe metadata in `wardrobeItems`, including the same `imageUrl` field
 
 ### Ask the stylist (always via server)
 

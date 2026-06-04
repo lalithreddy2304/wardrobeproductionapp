@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Category } from "../../types";
 import { cn } from "../../lib/utils";
 
@@ -25,6 +25,10 @@ export function FallbackImage({
   const [failed, setFailed] = useState(!src);
   const label = fallbackLabel ?? alt;
   const initial = category ? categoryInitial[category] : label.charAt(0).toUpperCase() || "M";
+
+  useEffect(() => {
+    setFailed(!src);
+  }, [src]);
 
   if (failed) {
     return (

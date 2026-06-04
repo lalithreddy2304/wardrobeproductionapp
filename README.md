@@ -11,7 +11,7 @@ Read **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** first. It explains fronten
 | Mode | You need | Data | Auth |
 |------|----------|------|------|
 | **Dev (default)** | `server/.env` + `npm run dev:server` | SQLite API | Email or demo Google |
-| **Firebase** | `.env.local` with `VITE_FIREBASE_*` | Firestore + Storage | Firebase Auth |
+| **Firebase** | `.env.local` with Firebase + Cloudinary vars | Firestore + Cloudinary images | Firebase Auth |
 
 ## Quick start
 
@@ -48,9 +48,22 @@ Or use `OPENAI_API_KEY` instead. Without this, the stylist returns an error (no 
 1. Create a project at [Firebase Console](https://console.firebase.google.com)
 2. Enable **Authentication** (Email + Google)
 3. Create **Firestore** database
-4. Enable **Storage**
-5. Copy web config into `.env.local` (see `.env.example`)
-6. Deploy rules: `firebase deploy --only firestore:rules` (uses `firestore.rules`)
+4. Copy web config into `.env.local` (see `.env.example`)
+5. Deploy rules: `firebase deploy --only firestore:rules` (uses `firestore.rules`)
+
+## Cloudinary image hosting
+
+Wardrobe images are uploaded to Cloudinary with an unsigned upload preset. The returned Cloudinary URL is saved in the existing Firestore `wardrobeItems.imageUrl` field.
+
+Add these to `.env.local`:
+
+```env
+VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name
+VITE_CLOUDINARY_UPLOAD_PRESET=your_unsigned_upload_preset
+VITE_CLOUDINARY_FOLDER=wardrobe
+```
+
+`VITE_CLOUDINARY_FOLDER` is optional. If omitted, uploads are stored under `wardrobe/{userId}`.
 
 Public `VITE_*` keys are safe in the frontend. **Never** put `GROQ_API_KEY` in the frontend.
 
@@ -82,6 +95,6 @@ server/
 
 - Frontend build command: `npm run build`
 - Frontend output directory: `dist`
-- Add the `VITE_FIREBASE_*` values in Vercel project settings.
+- Add the Firebase and Cloudinary `VITE_*` values in Vercel project settings.
 - Do not add `GROQ_API_KEY`, `OPENAI_API_KEY`, `JWT_SECRET`, or Firebase Admin private keys as `VITE_*` variables.
 - If the Express API is deployed separately, set `VITE_API_URL` to that API origin and set server `CORS_ORIGIN` to the Vercel frontend origin.

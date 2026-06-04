@@ -7,6 +7,7 @@ import { isFirebaseConfigured } from "../lib/config";
 import * as fb from "../services/firebase/wardrobe";
 import { buildSeedWardrobe } from "../services/seedData";
 import { getFirebaseDb } from "../lib/firebase";
+import { isDataUrl, uploadWardrobeImage } from "../services/cloudinary";
 
 type WardrobeCtx = {
   items: ClothingItem[];
@@ -173,7 +174,10 @@ export function WardrobeProvider({ children }: { children: ReactNode }) {
           createdItemId: item.id,
         });
       } else {
-        const { item } = await api.createItem(input);
+        const imageUrl = isDataUrl(input.imageUrl)
+          ? await uploadWardrobeImage(input.imageUrl, user.id)
+          : input.imageUrl;
+        const { item } = await api.createItem({ ...input, imageUrl });
         setItems((p) => {
           const next = [item, ...p];
           console.info("[wardrobe:save] Frontend state update result", {
