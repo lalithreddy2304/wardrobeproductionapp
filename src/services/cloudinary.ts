@@ -29,6 +29,8 @@ export async function uploadWardrobeImage(dataUrl: string, userId: string): Prom
   const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
   const folder = import.meta.env.VITE_CLOUDINARY_FOLDER || `wardrobe/${userId}`;
 
+  console.log("CLOUD_NAME", import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
+  console.log("UPLOAD_PRESET", import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET);
   validateCloudinaryConfig(cloudName, uploadPreset);
   validateImageDataUrl(dataUrl);
 
