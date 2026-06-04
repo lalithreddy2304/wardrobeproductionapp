@@ -3,16 +3,19 @@ import type React from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
+  Luggage,
   MessageCircle,
-  Plus,
+  RefreshCw,
   ShoppingBag,
   Wand2,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useWardrobe } from "../context/WardrobeContext";
+import { OutfitCard } from "../components/OutfitCard";
 import { FallbackImage } from "../components/ui/FallbackImage";
-import type { Category, ClothingItem, Outfit } from "../types";
+import { api, ApiError } from "../services/api";
+import type { Category, ClothingItem, Outfit, UserProfile } from "../types";
 
 const categories: Category[] = ["tops", "bottoms", "shoes", "accessories"];
 const NEUTRALS = [
@@ -47,7 +50,6 @@ type DashboardData = {
   combinations: number;
   recentItems: ClothingItem[];
   favoriteOutfits: Outfit[];
-  latestOutfit: Outfit | undefined;
   health: number;
   healthTip: string;
   weakest: CategoryCount;
@@ -72,7 +74,7 @@ export function Dashboard() {
 
   if (error) {
     return (
-      <div className="mx-auto mt-20 max-w-md rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-8 text-center">
+      <div className="mx-auto mt-20 max-w-md rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 text-center">
         <p className="text-sm text-[color:var(--color-ink)]">{error}</p>
       </div>
     );
@@ -91,10 +93,12 @@ export function Dashboard() {
       />
 
       <TodaysOutfitSection
-        latestOutfit={data.latestOutfit}
         items={items}
+        profile={user?.profile}
         onNavigate={navigate}
       />
+
+      <QuickActions onNavigate={navigate} />
 
       <StatsSection
         itemCount={items.length}
@@ -108,12 +112,6 @@ export function Dashboard() {
         health={data.health}
         combinations={data.combinations}
         gainIfAdded={(cat) => gainIfAdded(cat, data)}
-        onNavigate={navigate}
-      />
-
-      <QuickActions
-        itemCount={items.length}
-        combinations={data.combinations}
         onNavigate={navigate}
       />
 
@@ -146,13 +144,13 @@ function HeroSection({
   return (
     <motion.section
       {...sectionMotion(0)}
-      className="relative overflow-hidden rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] md:rounded-3xl"
+      className="relative overflow-hidden rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]"
     >
       <div className="absolute inset-0 aurora-bg opacity-70" />
-      <div className="relative grid gap-6 p-5 md:grid-cols-[1fr_220px] md:gap-8 md:p-9">
+      <div className="relative grid gap-5 p-4 md:grid-cols-[1fr_220px] md:gap-7 md:p-7">
         <div className="flex flex-col justify-between gap-5 md:gap-6">
           <div>
-            <h1 className="font-serif text-[34px] leading-tight text-[color:var(--color-ink)] md:text-[58px] md:leading-none">
+            <h1 className="font-serif text-[27px] leading-tight text-[color:var(--color-ink)] md:text-[46px] md:leading-none">
               {greeting}, {firstName}.
             </h1>
             <p className="mt-3 max-w-xl text-sm leading-relaxed text-[color:var(--color-ink-muted)] md:mt-4 md:text-base">
@@ -187,90 +185,118 @@ function HeroSection({
 }
 
 function TodaysOutfitSection({
-  latestOutfit,
   items,
+  profile,
   onNavigate,
 }: {
-  latestOutfit: Outfit | undefined;
   items: ClothingItem[];
+  profile: UserProfile | undefined;
   onNavigate: (path: string) => void;
 }) {
-  const outfitItems = latestOutfit
-    ? latestOutfit.items
-        .map((ref) => items.find((item) => item.id === ref.itemId))
-        .filter((item): item is ClothingItem => Boolean(item))
-    : [];
+  const [current, setCurrent] = useState<{
+    name: string;
+    items: Outfit["items"];
+    notes: string;
+  } | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const canGenerate = items.length >= 3;
+
+  const itemsById = useMemo(() => {
+    const map: Record<string, ClothingItem> = {};
+    items.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [items]);
+
+  const generate = async () => {
+    if (!canGenerate) {
+      setCurrent(null);
+      setError("");
+      return;
+    }
+
+    setBusy(true);
+    setError("");
+    try {
+      const result = await api.generateOutfit("casual", items, profile);
+      setCurrent(result);
+    } catch (caught) {
+      if (caught instanceof ApiError && caught.status === 401) return;
+      setError(caught instanceof ApiError ? caught.message : "Could not generate today's pick");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    generate();
+  }, [canGenerate, items, profile]);
+
+  const todayOutfit: Outfit | null = current
+    ? {
+        id: "today-pick",
+        userId: "dashboard",
+        name: "Your look for today",
+        items: current.items,
+        occasion: "casual",
+        rating: 0,
+        isFavorite: false,
+        createdAt: Date.now(),
+        notes: current.notes,
+      }
+    : null;
 
   return (
     <motion.section
       {...sectionMotion(1)}
-      className="rounded-2xl border border-[color:var(--color-border-soft)] border-l-4 border-l-[color:var(--color-gold)] bg-[color:var(--color-surface)] p-4 md:p-6"
+      className="rounded-xl border border-[color:var(--color-border-soft)] border-l-4 border-l-[color:var(--color-gold)] bg-[color:var(--color-surface)] p-4"
     >
-      {!latestOutfit ? (
-        <div className="flex flex-col items-center justify-center py-8 text-center md:py-10">
-          <HangerIllustration />
-          <h2 className="mt-5 font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">
-            No saved looks yet
-          </h2>
-          <p className="mt-2 text-sm text-[color:var(--color-ink-muted)]">
-            Generate your first outfit and save it here
-          </p>
-          <button
-            type="button"
-            onClick={() => onNavigate("/generate")}
-            className="mt-6 h-11 w-full rounded-full bg-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
-          >
-            Generate a look →
-          </button>
-        </div>
-      ) : (
-        <div className="grid gap-6 lg:grid-cols-[1fr_auto] lg:items-center">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] lg:items-start">
+        <div className="flex min-w-0 flex-col justify-between gap-4">
           <div>
-            <div className="flex flex-wrap items-center gap-3">
-              <h2 className="font-serif text-2xl text-[color:var(--color-ink)] md:text-4xl">
-                {latestOutfit.name}
-              </h2>
-              <span className="rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] px-3 py-1 text-xs uppercase tracking-widest text-[color:var(--color-gold)]">
-                {latestOutfit.occasion}
-              </span>
-            </div>
-            {latestOutfit.notes && (
-              <p className="mt-3 max-w-2xl text-sm italic leading-relaxed text-[color:var(--color-ink-muted)]">
-                {latestOutfit.notes}
-              </p>
-            )}
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-              <button
-                type="button"
-                onClick={() => onNavigate("/generate")}
-                className="h-10 w-full rounded-full bg-[color:var(--color-gold)] px-4 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
-              >
-                Generate new look
-              </button>
-              <button
-                type="button"
-                onClick={() => onNavigate("/saved")}
-                className="h-10 w-full rounded-full border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50 sm:w-auto"
-              >
-                View all saved
-              </button>
-            </div>
+            <p className="text-[10px] uppercase tracking-[0.24em] text-[color:var(--color-gold)]">
+              Today's Pick
+            </p>
+            <h2 className="mt-1 font-serif text-xl leading-tight text-[color:var(--color-ink)] md:text-2xl">
+              Your look for today
+            </h2>
+            <p className="mt-1 text-sm text-[color:var(--color-ink-muted)]">
+              Based on your wardrobe
+            </p>
+            {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
           </div>
 
-          <div className="flex gap-2 overflow-x-auto lg:max-w-md">
-            {outfitItems.map((item) => (
-              <FallbackImage
-                key={item.id}
-                src={item.imageUrl}
-                alt={item.name}
-                category={item.category}
-                fallbackLabel={item.name}
-                className="h-24 w-24 shrink-0 rounded-xl object-cover"
-              />
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={generate}
+            disabled={busy || !canGenerate}
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[color:var(--color-border)] px-5 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50 disabled:opacity-50 sm:w-auto"
+          >
+            <RefreshCw className={`h-4 w-4 ${busy ? "animate-spin" : ""}`} />
+            Shuffle
+          </button>
         </div>
-      )}
+
+        {todayOutfit ? (
+          <OutfitCard outfit={todayOutfit} itemsById={itemsById} />
+        ) : (
+          <div className="flex min-h-[220px] flex-col items-center justify-center rounded-xl border border-dashed border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] p-4 text-center">
+            <HangerIllustration />
+            <p className="mt-4 text-sm text-[color:var(--color-ink)]">
+              Add a few more pieces to generate today's casual pick.
+            </p>
+            <button
+              type="button"
+              onClick={() => onNavigate("/wardrobe")}
+              className="mt-4 h-11 w-full rounded-full bg-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
+            >
+              Go to closet
+            </button>
+          </div>
+        )}
+      </div>
     </motion.section>
   );
 }
@@ -338,13 +364,13 @@ function SmartNudge({
   return (
     <motion.section
       {...sectionMotion(3)}
-      className="flex flex-col gap-4 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-5 sm:flex-row sm:items-center sm:justify-between"
+      className="flex flex-col gap-4 rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 sm:flex-row sm:items-center sm:justify-between"
     >
       <p className="text-sm leading-relaxed text-[color:var(--color-ink)]">{nudge.text}</p>
       <button
         type="button"
         onClick={() => onNavigate(nudge.path)}
-        className="h-10 w-full shrink-0 rounded-full border border-[color:var(--color-gold)]/40 px-4 text-sm text-[color:var(--color-gold)] hover:bg-[color:var(--color-gold)]/10 sm:w-auto"
+        className="h-11 w-full shrink-0 rounded-full border border-[color:var(--color-gold)]/40 px-4 text-sm text-[color:var(--color-gold)] hover:bg-[color:var(--color-gold)]/10 sm:w-auto"
       >
         {nudge.label}
       </button>
@@ -352,43 +378,29 @@ function SmartNudge({
   );
 }
 
-function QuickActions({
-  itemCount,
-  combinations,
-  onNavigate,
-}: {
-  itemCount: number;
-  combinations: number;
-  onNavigate: (path: string) => void;
-}) {
+function QuickActions({ onNavigate }: { onNavigate: (path: string) => void }) {
   return (
     <motion.section {...sectionMotion(4)}>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
         <QuickActionCard
           icon={Wand2}
-          title="Generate Look"
-          badge={`${combinations} real outfits`}
-          disabled={combinations === 0}
-          disabledReason="Generate Look is available after you add tops and bottoms."
+          title="Generate Outfit"
           onClick={() => onNavigate("/generate")}
         />
         <QuickActionCard
-          icon={Plus}
-          title="Add Clothing"
-          badge={`${itemCount} pieces`}
-          onClick={() => onNavigate("/wardrobe")}
-        />
-        <QuickActionCard
           icon={MessageCircle}
-          title="AI Stylist"
-          badge="Always on"
+          title="Ask Stylist"
           onClick={() => onNavigate("/stylist")}
         />
         <QuickActionCard
           icon={ShoppingBag}
           title="Smart Buy"
-          badge="Fill gaps"
           onClick={() => onNavigate("/shopping")}
+        />
+        <QuickActionCard
+          icon={Luggage}
+          title="Pack a Trip"
+          onClick={() => onNavigate("/pack")}
         />
       </div>
     </motion.section>
@@ -405,7 +417,7 @@ function RecentAdditions({
   return (
     <motion.section {...sectionMotion(5)}>
       <div className="mb-4 flex items-center justify-between gap-4">
-        <h2 className="font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">Recently added</h2>
+        <h2 className="font-serif text-base text-[color:var(--color-ink)]">Recently added</h2>
         <button
           type="button"
           onClick={() => onNavigate("/wardrobe")}
@@ -418,7 +430,7 @@ function RecentAdditions({
         {items.map((item) => (
           <div
             key={item.id}
-            className="flex min-w-0 items-center gap-3 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-3"
+            className="flex min-w-0 items-center gap-3 rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-3"
           >
             <FallbackImage
               src={item.imageUrl}
@@ -516,9 +528,9 @@ function StatCard({
   return (
     <div
       title={title}
-      className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 transition-transform duration-200 hover:-translate-y-0.5 md:p-5"
+      className="rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 transition-transform duration-200 hover:-translate-y-0.5"
     >
-      <p className="font-serif text-3xl text-[color:var(--color-ink)] md:text-4xl">{value}</p>
+      <p className="font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">{value}</p>
       <p className="mt-2 text-[10px] uppercase tracking-widest text-[color:var(--color-ink-muted)]">
         {label}
       </p>
@@ -529,44 +541,20 @@ function StatCard({
 function QuickActionCard({
   icon: Icon,
   title,
-  badge,
-  disabled = false,
-  disabledReason,
   onClick,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
-  badge: string;
-  disabled?: boolean;
-  disabledReason?: string;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
-      onClick={disabled ? undefined : onClick}
-      title={disabled ? disabledReason : undefined}
-      className={`flex items-center justify-between gap-3 rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 text-left transition-all duration-200 md:gap-4 md:p-5 ${
-        disabled
-          ? "cursor-not-allowed opacity-55"
-          : "hover:-translate-y-0.5 hover:border-[color:var(--color-gold)]/40"
-      }`}
+      onClick={onClick}
+      className="flex h-11 min-w-[148px] shrink-0 items-center justify-center gap-2 rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] px-4 text-sm font-medium text-[color:var(--color-ink)] transition-all duration-200 hover:border-[color:var(--color-gold)]/40 sm:min-w-[170px]"
     >
-      <span className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--color-bg-elev)]">
-          <Icon className="h-5 w-5 text-[color:var(--color-gold)]" />
-        </span>
-        <span className="text-sm font-medium text-[color:var(--color-ink)]">{title}</span>
-      </span>
-      <span
-        className={`rounded-full border px-3 py-1 text-xs ${
-          disabled
-            ? "border-[color:var(--color-border)] text-[color:var(--color-ink-dim)]"
-            : "border-[color:var(--color-border)] text-[color:var(--color-ink-muted)]"
-        }`}
-      >
-        {badge}
-      </span>
+      <Icon className="h-4 w-4 text-[color:var(--color-gold)]" />
+      <span>{title}</span>
     </button>
   );
 }
@@ -615,7 +603,6 @@ function deriveDashboardData(items: ClothingItem[], outfits: Outfit[]): Dashboar
     .sort((a, b) => b.createdAt - a.createdAt)
     .slice(0, 4);
   const favoriteOutfits = outfits.filter((outfit) => outfit.isFavorite);
-  const latestOutfit = [...outfits].sort((a, b) => b.createdAt - a.createdAt)[0];
   const { health, tip: healthTip } = calculateWardrobeHealth(items, combinations);
 
   const categoryCounts = categories.map((cat) => ({
@@ -632,7 +619,6 @@ function deriveDashboardData(items: ClothingItem[], outfits: Outfit[]): Dashboar
     combinations,
     recentItems,
     favoriteOutfits,
-    latestOutfit,
     health,
     healthTip,
     weakest,

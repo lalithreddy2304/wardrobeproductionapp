@@ -121,8 +121,8 @@ export function Wardrobe() {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-[color:var(--color-border)] px-4 py-14 text-center md:py-20">
-          <p className="font-serif text-2xl text-[color:var(--color-ink)]">
+        <div className="rounded-xl border border-dashed border-[color:var(--color-border)] px-4 py-14 text-center md:py-20">
+          <p className="font-serif text-base text-[color:var(--color-ink)]">
             {query ? "No pieces match your search" : "Nothing here yet"}
           </p>
           <p className="text-sm text-[color:var(--color-ink-muted)] mt-2">
@@ -133,7 +133,7 @@ export function Wardrobe() {
           {!query && (
             <button
               onClick={() => setUploadOpen(true)}
-              className="mt-5 h-10 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
+              className="mt-5 h-11 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
             >
               Upload a piece
             </button>
@@ -198,7 +198,7 @@ export function Wardrobe() {
                   <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">
                     {titleCase(detail.category)}
                   </p>
-                  <h3 className="mt-1 font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">
+                  <h3 className="mt-1 font-serif text-xl text-[color:var(--color-ink)] md:text-2xl">
                     {detail.name}
                   </h3>
                 </div>

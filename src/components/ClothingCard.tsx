@@ -23,7 +23,7 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
     >
       <div
         onClick={() => onClick?.(item)}
-        className="relative aspect-[4/5] cursor-pointer overflow-hidden rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] md:rounded-2xl"
+        className="relative aspect-[4/5] max-h-[160px] cursor-pointer overflow-hidden rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]"
       >
         <FallbackImage
           src={item.imageUrl}
@@ -36,8 +36,8 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-70 group-hover:opacity-90 transition-opacity" />
 
         {/* Top actions */}
-        <div className="absolute left-2 right-2 top-2 flex items-center justify-between md:left-3 md:right-3 md:top-3">
-          <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[9px] uppercase tracking-[0.18em] text-[color:var(--color-ink)]/90 backdrop-blur-md md:px-2.5 md:py-1 md:text-[10px] md:tracking-[0.22em]">
+        <div className="absolute left-2 right-2 top-2 flex items-center justify-between">
+          <span className="rounded-full border border-white/10 bg-black/40 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-[color:var(--color-ink)]/90 backdrop-blur-md">
             {titleCase(item.category)}
           </span>
           <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -46,7 +46,7 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
                 e.stopPropagation();
                 onToggleFavorite?.(item.id);
               }}
-              className="h-8 w-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center hover:bg-black/70 border border-white/10"
+              className="h-11 w-11 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center hover:bg-black/70 border border-white/10"
               aria-label="Favorite"
             >
               <Heart
@@ -63,7 +63,7 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
                   e.stopPropagation();
                   onRemove(item.id);
                 }}
-                className="h-8 w-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center hover:bg-red-500/80 border border-white/10"
+                className="h-11 w-11 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center hover:bg-red-500/80 border border-white/10"
                 aria-label="Remove"
               >
                 <Trash2 className="h-4 w-4 text-white" />
@@ -80,19 +80,19 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
         )}
 
         {/* Info */}
-        <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4">
-          <h3 className="font-serif text-base leading-tight text-white drop-shadow md:text-lg">
+        <div className="absolute bottom-0 left-0 right-0 p-2.5">
+          <h3 className="font-serif text-xs leading-tight text-white drop-shadow">
             {item.name}
           </h3>
           <div className="flex items-center gap-2 mt-1.5">
-            <span className="inline-flex items-center gap-1.5 text-[11px] text-white/80">
+            <span className="inline-flex items-center gap-1.5 text-xs text-white/80">
               <span
                 className="h-2.5 w-2.5 rounded-full border border-white/30"
                 style={{ background: cssColor(item.color) }}
               />
               {item.color}
             </span>
-            <span className="text-[11px] text-white/50">· {item.usageCount} wears</span>
+            <span className="text-xs text-white/50">· {item.usageCount} wears</span>
           </div>
         </div>
       </div>
@@ -103,7 +103,7 @@ export function ClothingCard({ item, onToggleFavorite, onRemove, onClick }: Prop
           e.stopPropagation();
           onClick?.(item);
         }}
-        className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity h-8 w-8 rounded-full bg-[color:var(--color-surface)] border border-[color:var(--color-border)] flex items-center justify-center"
+        className="absolute -right-2 -top-2 flex h-11 w-11 items-center justify-center rounded-full border border-[color:var(--color-border)] bg-[color:var(--color-surface)] opacity-0 transition-opacity group-hover:opacity-100"
         aria-label="More"
       >
         <MoreHorizontal className="h-4 w-4 text-[color:var(--color-ink-muted)]" />

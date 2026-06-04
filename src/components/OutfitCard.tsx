@@ -23,12 +23,12 @@ export function OutfitCard({ outfit, itemsById, onToggleFavorite, onRemove, onRa
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.96 }}
-      className="group relative overflow-hidden rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] lift md:rounded-2xl"
+      className="group relative max-h-[420px] overflow-hidden rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] lift"
     >
       {/* Image grid */}
       <div className="grid grid-cols-2 gap-px bg-[color:var(--color-border-soft)]">
         {resolved.slice(0, 4).map((r, i) => (
-          <div key={r.item.id + i} className="relative aspect-square bg-[color:var(--color-bg)] overflow-hidden">
+          <div key={r.item.id + i} className="relative h-[130px] max-h-[130px] overflow-hidden bg-[color:var(--color-bg)]">
             <FallbackImage
               src={r.item.imageUrl}
               alt={r.item.name}
@@ -43,12 +43,12 @@ export function OutfitCard({ outfit, itemsById, onToggleFavorite, onRemove, onRa
         ))}
         {/* Fill empty slots */}
         {Array.from({ length: Math.max(0, 4 - resolved.length) }).map((_, i) => (
-          <div key={"empty" + i} className="aspect-square bg-[color:var(--color-bg)]" />
+          <div key={"empty" + i} className="h-[130px] max-h-[130px] bg-[color:var(--color-bg)]" />
         ))}
       </div>
 
       {/* Body */}
-      <div className="p-4 md:p-5">
+      <div className="p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">
@@ -61,7 +61,7 @@ export function OutfitCard({ outfit, itemsById, onToggleFavorite, onRemove, onRa
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => onToggleFavorite?.(outfit.id)}
-              className="h-8 w-8 rounded-full hover:bg-[color:var(--color-surface-2)] flex items-center justify-center"
+              className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-[color:var(--color-surface-2)]"
               aria-label="Favorite"
             >
               <Heart
@@ -75,7 +75,7 @@ export function OutfitCard({ outfit, itemsById, onToggleFavorite, onRemove, onRa
             {onRemove && (
               <button
                 onClick={() => onRemove(outfit.id)}
-                className="h-8 w-8 rounded-full hover:bg-red-500/10 flex items-center justify-center text-[color:var(--color-ink-muted)] hover:text-red-400"
+                className="flex h-11 w-11 items-center justify-center rounded-full text-[color:var(--color-ink-muted)] hover:bg-red-500/10 hover:text-red-400"
                 aria-label="Remove"
               >
                 <Trash2 className="h-4 w-4" />

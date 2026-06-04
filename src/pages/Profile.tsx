@@ -5,9 +5,14 @@ import {
   ChevronRight,
   Download,
   Edit3,
+  Heart,
+  LineChart,
   LogOut,
+  Luggage,
   Palette,
   Shield,
+  Shirt,
+  ShoppingBag,
   Trash2,
   X,
 } from "lucide-react";
@@ -294,8 +299,43 @@ export function Profile() {
         </div>
       </motion.section>
 
+      <AnimatedSection title="Utilities">
+        <div className="overflow-hidden rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)]">
+          <HubButton
+            label="Closet"
+            detail="Browse your wardrobe"
+            icon={Shirt}
+            onClick={() => navigate("/wardrobe")}
+          />
+          <HubButton
+            label="Smart Buy"
+            detail="Find what your wardrobe is missing"
+            icon={ShoppingBag}
+            onClick={() => navigate("/shopping")}
+          />
+          <HubButton
+            label="Pack"
+            detail="Build a travel packing list"
+            icon={Luggage}
+            onClick={() => navigate("/pack")}
+          />
+          <HubButton
+            label="Insights"
+            detail="See your wardrobe stats"
+            icon={LineChart}
+            onClick={() => navigate("/insights")}
+          />
+          <HubButton
+            label="Saved"
+            detail="Your saved looks"
+            icon={Heart}
+            onClick={() => navigate("/saved")}
+          />
+        </div>
+      </AnimatedSection>
+
       <AnimatedSection title="Your style identity">
-        <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-6">
+        <div className="rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-6">
           <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2">
@@ -502,9 +542,37 @@ function Avatar({ name, photoURL, size }: { name: string; photoURL?: string; siz
 function AnimatedSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <motion.section initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-80px" }}>
-      <h2 className="mb-4 font-serif text-2xl text-[color:var(--color-ink)] md:text-3xl">{title}</h2>
+      <h2 className="mb-4 font-serif text-base text-[color:var(--color-ink)]">{title}</h2>
       {children}
     </motion.section>
+  );
+}
+
+function HubButton({
+  label,
+  detail,
+  icon: Icon,
+  onClick,
+}: {
+  label: string;
+  detail: string;
+  icon: React.ComponentType<{ className?: string }>;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex min-h-14 w-full items-center gap-3 border-b border-[color:var(--color-border-soft)] px-4 py-3 text-left last:border-b-0 hover:bg-[color:var(--color-bg-elev)]/50"
+    >
+      <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[color:var(--color-bg-elev)] text-[color:var(--color-gold)]">
+        <Icon className="h-5 w-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-medium text-[color:var(--color-ink)]">{label}</span>
+        <span className="block text-xs text-[color:var(--color-ink-muted)]">{detail}</span>
+      </span>
+      <ChevronRight className="h-4 w-4 shrink-0 text-[color:var(--color-ink-dim)]" />
+    </button>
   );
 }
 

@@ -154,12 +154,12 @@ export function AuthShell({
       </div>
 
       {/* Right: form */}
-      <div className="relative flex items-center justify-center p-4 sm:p-6 md:p-10">
+      <div className="relative flex min-w-0 items-center justify-start overflow-hidden p-4 sm:justify-center sm:p-6 md:p-10">
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="w-full max-w-md"
+          className="min-w-0 w-full max-w-[338px] sm:max-w-md"
         >
           <div className="mb-8 flex items-center gap-3 lg:hidden md:mb-10">
             <div className="h-10 w-10 rounded-lg gold-ring flex items-center justify-center">

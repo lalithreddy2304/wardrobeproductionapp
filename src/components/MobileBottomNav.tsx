@@ -1,18 +1,16 @@
 import { NavLink, useLocation } from "react-router-dom";
 import {
-  LayoutDashboard,
+  House,
   MessageSquare,
-  ShoppingBag,
   Sparkles,
   UserRound,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
 const MOBILE_TABS = [
-  { to: "/", label: "Home", icon: LayoutDashboard, end: true },
+  { to: "/", label: "Home", icon: House, end: true },
   { to: "/generate", label: "Create", icon: Sparkles },
   { to: "/stylist", label: "Stylist", icon: MessageSquare },
-  { to: "/shopping", label: "Smart Buy", icon: ShoppingBag },
   { to: "/profile", label: "Profile", icon: UserRound },
 ];
 
@@ -21,10 +19,10 @@ export function MobileBottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)]/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.45rem)] pt-2 shadow-[0_-16px_36px_rgba(0,0,0,0.42)] backdrop-blur-xl lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)]/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0_-16px_36px_rgba(0,0,0,0.42)] backdrop-blur-xl lg:hidden"
       aria-label="Primary navigation"
     >
-      <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
+      <div className="mx-auto grid max-w-md grid-cols-4 gap-1">
         {MOBILE_TABS.map((item) => {
           const Icon = item.icon;
           const active =
@@ -36,7 +34,7 @@ export function MobileBottomNav() {
               to={item.to}
               end={item.end}
               className={cn(
-                "flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[11px] font-medium transition-colors",
+                "flex min-h-12 min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 text-[11px] font-medium transition-colors",
                 active
                   ? "bg-[color:var(--color-surface)] text-[color:var(--color-gold-bright)]"
                   : "text-[color:var(--color-ink-muted)]"

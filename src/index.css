@@ -112,11 +112,25 @@ body {
     transform: none;
   }
 
+  body {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
   input,
   textarea,
   select,
   button {
     max-width: 100%;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+
+  button {
+    min-height: 44px;
   }
 }
 
