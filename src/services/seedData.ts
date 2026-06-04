@@ -60,6 +60,8 @@ function buildFemaleSeed(gender: Gender = "female"): SeedWardrobeItem[] {
        "https://images.unsplash.com/photo-1767631338127-8cd80ee2f9df?w=800&q=80", gender),
     mk("High-Waist Straight Jeans","bottoms", "Indigo",["denim", "casual", "travel", "date"],
        "https://images.unsplash.com/photo-1546635834-78554e816d55?w=800&q=80", gender),
+    mk("Cream Midi Skirt",         "bottoms", "Cream",["skirt", "formal", "wedding", "date", "feminine"],
+       "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=800&q=80", gender),
     mk("Black Heeled Sandals",     "shoes", "Black",  ["heels", "formal", "wedding", "party", "date"],
        "https://images.unsplash.com/photo-1584473457417-bd0afe798ae1?w=800&q=80", gender, true),
     mk("White Low-Top Sneakers",   "shoes", "White",  ["sneakers", "casual", "travel", "smart-casual"],
