@@ -381,26 +381,30 @@ function SmartNudge({
 function QuickActions({ onNavigate }: { onNavigate: (path: string) => void }) {
   return (
     <motion.section {...sectionMotion(4)}>
-      <div className="no-scrollbar flex gap-3 overflow-x-auto pb-1">
-        <QuickActionCard
-          icon={Wand2}
-          title="Generate Outfit"
-          onClick={() => onNavigate("/generate")}
-        />
-        <QuickActionCard
-          icon={MessageCircle}
-          title="Ask Stylist"
-          onClick={() => onNavigate("/stylist")}
-        />
+      <div className="grid auto-rows-fr grid-cols-2 gap-3">
         <QuickActionCard
           icon={ShoppingBag}
           title="Smart Buy"
+          subtitle="Find what your wardrobe is missing"
           onClick={() => onNavigate("/shopping")}
         />
         <QuickActionCard
           icon={Luggage}
           title="Pack a Trip"
+          subtitle="Build a travel packing list"
           onClick={() => onNavigate("/pack")}
+        />
+        <QuickActionCard
+          icon={Wand2}
+          title="Create Outfit"
+          subtitle="Generate a new look"
+          onClick={() => onNavigate("/generate")}
+        />
+        <QuickActionCard
+          icon={MessageCircle}
+          title="Ask Stylist"
+          subtitle="Get personalized advice"
+          onClick={() => onNavigate("/stylist")}
         />
       </div>
     </motion.section>
@@ -541,20 +545,31 @@ function StatCard({
 function QuickActionCard({
   icon: Icon,
   title,
+  subtitle,
   onClick,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   title: string;
+  subtitle: string;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="flex h-11 min-w-[148px] shrink-0 items-center justify-center gap-2 rounded-xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] px-4 text-sm font-medium text-[color:var(--color-ink)] transition-all duration-200 hover:border-[color:var(--color-gold)]/40 sm:min-w-[170px]"
+      className="group flex min-h-[118px] w-full flex-col items-start justify-between rounded-xl border border-[color:var(--color-gold)]/25 bg-[color:var(--color-surface)] p-4 text-left shadow-[0_0_0_1px_rgba(212,180,131,0.04),0_14px_32px_rgba(0,0,0,0.28)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[color:var(--color-gold)]/45 hover:bg-[color:var(--color-surface-2)] focus-gold"
     >
-      <Icon className="h-4 w-4 text-[color:var(--color-gold)]" />
-      <span>{title}</span>
+      <span className="flex h-11 w-11 items-center justify-center rounded-xl border border-[color:var(--color-gold)]/20 bg-[color:var(--color-gold)]/10 text-[color:var(--color-gold)] transition-colors group-hover:border-[color:var(--color-gold)]/35">
+        <Icon className="h-5 w-5" />
+      </span>
+      <span className="mt-4 block min-w-0">
+        <span className="block text-sm font-medium leading-tight text-[color:var(--color-ink)]">
+          {title}
+        </span>
+        <span className="mt-1 block text-xs leading-snug text-[color:var(--color-ink-muted)]">
+          {subtitle}
+        </span>
+      </span>
     </button>
   );
 }
