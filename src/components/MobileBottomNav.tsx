@@ -2,6 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import {
   House,
   MessageSquare,
+  Shirt,
   Sparkles,
   UserRound,
 } from "lucide-react";
@@ -9,9 +10,10 @@ import { cn } from "../lib/utils";
 
 const MOBILE_TABS = [
   { to: "/", label: "Home", icon: House, end: true },
+  { to: "/wardrobe", label: "Closet", icon: Shirt },
   { to: "/generate", label: "Create", icon: Sparkles },
   { to: "/stylist", label: "Stylist", icon: MessageSquare },
-  { to: "/profile", label: "Profile", icon: UserRound },
+  { to: "/profile", label: "Profile", icon: UserRound, activePaths: ["/saved", "/insights", "/shopping", "/pack"] },
 ];
 
 export function MobileBottomNav() {
@@ -22,11 +24,13 @@ export function MobileBottomNav() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)]/95 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0_-16px_36px_rgba(0,0,0,0.42)] backdrop-blur-xl lg:hidden"
       aria-label="Primary navigation"
     >
-      <div className="mx-auto grid max-w-md grid-cols-4 gap-1">
+      <div className="mx-auto grid max-w-md grid-cols-5 gap-1">
         {MOBILE_TABS.map((item) => {
           const Icon = item.icon;
           const active =
-            item.end ? pathname === item.to : pathname.startsWith(item.to);
+            item.end
+              ? pathname === item.to
+              : pathname.startsWith(item.to) || item.activePaths?.some((path) => pathname.startsWith(path));
 
           return (
             <NavLink
