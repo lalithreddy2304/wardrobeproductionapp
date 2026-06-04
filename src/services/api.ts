@@ -98,7 +98,17 @@ async function request<T>(
   };
   if (token) headers.Authorization = `Bearer ${token}`;
 
+  console.info("[wardrobe:api] API endpoint called", {
+    path,
+    method: options.method ?? "GET",
+    hasAuthorization: Boolean(headers.Authorization),
+  });
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
+  console.info("[wardrobe:api] Response status", {
+    path,
+    status: res.status,
+    ok: res.ok,
+  });
   if (res.status === 204) return undefined as T;
 
   if (res.status === 401 && retryOnUnauthorized && path !== "/api/auth/sync") {
@@ -109,6 +119,9 @@ async function request<T>(
   }
 
   const data = await res.json().catch(() => ({}));
+  if (path === "/api/items") {
+    console.info("[wardrobe:api] Response body", summarizeApiBody(data));
+  }
   if (!res.ok) {
     console.error(
       "API Request Failed:",
@@ -223,3 +236,29 @@ export const api = {
       body: JSON.stringify(input),
     }),
 };
+
+function summarizeApiBody(data: unknown) {
+  if (!data || typeof data !== "object") return data;
+  const body = data as { item?: ClothingItem; error?: unknown };
+  if (body.item) {
+    return {
+      item: {
+        id: body.item.id,
+        userId: body.item.userId,
+        name: body.item.name,
+        category: body.item.category,
+        color: body.item.color,
+        tags: body.item.tags,
+        imageUrl: body.item.imageUrl
+          ? {
+              kind: body.item.imageUrl.startsWith("data:") ? "data-url" : "remote-url",
+              length: body.item.imageUrl.length,
+              prefix: body.item.imageUrl.slice(0, 32),
+            }
+          : { kind: "empty", length: 0 },
+      },
+    };
+  }
+  if (body.error) return { error: body.error };
+  return data;
+}

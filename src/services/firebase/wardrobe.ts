@@ -22,6 +22,7 @@ const COL = {
   chat: "aiHistory",
   users: "users",
 } as const;
+const MAX_INLINE_FIRESTORE_IMAGE_CHARS = 800_000;
 
 const MALE_SEED_ITEM_NAMES = new Set([
   "White Oxford Shirt",
@@ -113,11 +114,36 @@ export async function createItem(
   input: Omit<ClothingItem, "id" | "userId" | "createdAt" | "usageCount">
 ): Promise<ClothingItem> {
   let imageUrl = input.imageUrl;
+  console.info("[wardrobe:firebase] createItem called", {
+    userId,
+    collection: COL.items,
+    payload: summarizeItemForLog(input),
+  });
   if (imageUrl.startsWith("data:")) {
     const path = `users/${userId}/items/${uid("img_")}.jpg`;
     const storageRef = ref(getFirebaseStorage(), path);
-    await uploadString(storageRef, imageUrl, "data_url");
-    imageUrl = await getDownloadURL(storageRef);
+    console.info("[wardrobe:firebase] Storage upload endpoint called", {
+      path,
+      imageLength: imageUrl.length,
+    });
+    try {
+      await uploadString(storageRef, imageUrl, "data_url");
+      imageUrl = await getDownloadURL(storageRef);
+      console.info("[wardrobe:firebase] Storage upload result", {
+        path,
+        imageUrl: summarizeImageUrl(imageUrl),
+      });
+    } catch (error) {
+      console.error("[wardrobe:firebase] Storage upload failed; continuing to database insert", {
+        path,
+        error: error instanceof Error ? error.message : error,
+      });
+      imageUrl = imageUrl.length <= MAX_INLINE_FIRESTORE_IMAGE_CHARS ? imageUrl : "";
+      console.warn("[wardrobe:firebase] Image URL fallback selected", {
+        fallback: imageUrl ? "inline-data-url" : "empty-image-url",
+        originalImageLength: input.imageUrl.length,
+      });
+    }
   }
   const payload = {
     userId,
@@ -126,7 +152,15 @@ export async function createItem(
     usageCount: 0,
     createdAt: Date.now(),
   };
+  console.info("[wardrobe:firebase] Firestore addDoc endpoint called", {
+    collection: COL.items,
+    payload: summarizeItemForLog(payload),
+  });
   const refDoc = await addDoc(collection(getFirebaseDb(), COL.items), payload);
+  console.info("[wardrobe:firebase] Database insert result", {
+    collection: COL.items,
+    documentId: refDoc.id,
+  });
   return { id: refDoc.id, ...payload };
 }
 
@@ -236,4 +270,23 @@ export async function deleteUserFirestoreData(userId: string) {
 
   batch.delete(doc(db, COL.users, userId));
   await batch.commit();
+}
+
+function summarizeItemForLog(item: Partial<ClothingItem>) {
+  return {
+    name: item.name,
+    category: item.category,
+    color: item.color,
+    tags: item.tags ?? [],
+    imageUrl: summarizeImageUrl(item.imageUrl ?? ""),
+  };
+}
+
+function summarizeImageUrl(imageUrl: string) {
+  if (!imageUrl) return { kind: "empty", length: 0 };
+  return {
+    kind: imageUrl.startsWith("data:") ? "data-url" : "remote-url",
+    length: imageUrl.length,
+    prefix: imageUrl.slice(0, 32),
+  };
 }

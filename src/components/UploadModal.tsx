@@ -72,6 +72,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
   const [analysisFailed, setAnalysisFailed] = useState(false);
   const [categoryHighConfidence, setCategoryHighConfidence] = useState(false);
   const [genderMismatch, setGenderMismatch] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const reset = () => {
@@ -85,6 +86,7 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
     setAnalysisFailed(false);
     setCategoryHighConfidence(false);
     setGenderMismatch(false);
+    setSaveError("");
   };
 
   const analyzeImage = async (file: File, dataUrl: string) => {
@@ -162,8 +164,22 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!imageUrl || !name || !color) return;
-    await onSubmit({
+    console.info("[wardrobe:save] Save button clicked", {
+      hasImageUrl: Boolean(imageUrl),
+      name,
+      category,
+      color,
+      tags,
+    });
+    if (!imageUrl || !name || !color) {
+      console.warn("[wardrobe:save] Save blocked by frontend validation", {
+        hasImageUrl: Boolean(imageUrl),
+        hasName: Boolean(name),
+        hasColor: Boolean(color),
+      });
+      return;
+    }
+    const payload = {
       name,
       category,
       color,
@@ -173,9 +189,21 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
         .filter(Boolean),
       imageUrl,
       isFavorite: false,
+    };
+    console.info("[wardrobe:save] Payload being sent", {
+      ...payload,
+      imageUrl: summarizeImageUrl(payload.imageUrl),
     });
-    reset();
-    onClose();
+    setSaveError("");
+    try {
+      await onSubmit(payload);
+      reset();
+      onClose();
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Could not save this item";
+      console.error("[wardrobe:save] Save failed before modal close", error);
+      setSaveError(message);
+    }
   };
 
   return (
@@ -274,6 +302,11 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
                   {fileError && (
                     <p className="mt-2 rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-2 text-xs text-red-200">
                       {fileError}
+                    </p>
+                  )}
+                  {saveError && (
+                    <p className="mt-2 rounded-lg border border-red-400/20 bg-red-500/10 px-3 py-2 text-xs text-red-200">
+                      {saveError}
                     </p>
                   )}
                   {analysisLoading && (
@@ -409,6 +442,16 @@ export function UploadModal({ open, onClose, onSubmit }: Props) {
       )}
     </AnimatePresence>
   );
+}
+
+function summarizeImageUrl(imageUrl: string) {
+  if (!imageUrl) return { present: false };
+  return {
+    present: true,
+    kind: imageUrl.startsWith("data:") ? "data-url" : "remote-url",
+    length: imageUrl.length,
+    prefix: imageUrl.slice(0, 32),
+  };
 }
 
 function isHighConfidence(detected: DetectedItem, category?: Category): boolean {

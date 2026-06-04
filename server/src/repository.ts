@@ -198,7 +198,7 @@ export const repo = {
   },
 
   insertItem(item: ClothingItem) {
-    db.prepare(
+    const result = db.prepare(
       `INSERT INTO clothing_items (id, user_id, name, category, color, tags, image_url, usage_count, is_favorite, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).run(
@@ -213,6 +213,7 @@ export const repo = {
       item.isFavorite ? 1 : 0,
       item.createdAt
     );
+    return result;
   },
 
   updateItem(userId: string, id: string, patch: Partial<ClothingItem>): ClothingItem | null {

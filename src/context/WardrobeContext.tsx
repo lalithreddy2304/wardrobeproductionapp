@@ -146,13 +146,48 @@ export function WardrobeProvider({ children }: { children: ReactNode }) {
     refresh: load,
 
     addItem: async (input) => {
-      if (!user) return;
+      console.info("[wardrobe:save] WardrobeContext.addItem called", {
+        mode: useFirebase ? "firebase" : "api",
+        hasUser: Boolean(user),
+        currentItemCount: items.length,
+        payload: summarizeItemForLog(input),
+      });
+      if (!user) {
+        console.warn("[wardrobe:save] Save aborted because no authenticated user was available");
+        return;
+      }
       if (useFirebase) {
         const item = await fb.createItem(user.id, input);
-        setItems((p) => [item, ...p]);
+        setItems((p) => {
+          const next = [item, ...p];
+          console.info("[wardrobe:save] Frontend state update result", {
+            mode: "firebase",
+            beforeCount: p.length,
+            afterCount: next.length,
+            createdItemId: item.id,
+          });
+          return next;
+        });
+        await load();
+        console.info("[wardrobe:save] State refresh requested after Firebase insert", {
+          createdItemId: item.id,
+        });
       } else {
         const { item } = await api.createItem(input);
-        setItems((p) => [item, ...p]);
+        setItems((p) => {
+          const next = [item, ...p];
+          console.info("[wardrobe:save] Frontend state update result", {
+            mode: "api",
+            beforeCount: p.length,
+            afterCount: next.length,
+            createdItemId: item.id,
+          });
+          return next;
+        });
+        await load();
+        console.info("[wardrobe:save] State refresh requested after API insert", {
+          createdItemId: item.id,
+        });
       }
     },
 
@@ -247,4 +282,23 @@ export function useWardrobe() {
   const c = useContext(Ctx);
   if (!c) throw new Error("useWardrobe must be used within WardrobeProvider");
   return c;
+}
+
+function summarizeItemForLog(
+  item: Omit<ClothingItem, "id" | "userId" | "createdAt" | "usageCount">
+) {
+  return {
+    name: item.name,
+    category: item.category,
+    color: item.color,
+    tags: item.tags,
+    isFavorite: item.isFavorite ?? false,
+    imageUrl: item.imageUrl
+      ? {
+          kind: item.imageUrl.startsWith("data:") ? "data-url" : "remote-url",
+          length: item.imageUrl.length,
+          prefix: item.imageUrl.slice(0, 32),
+        }
+      : { kind: "empty", length: 0 },
+  };
 }
