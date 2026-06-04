@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Plus, Search, SlidersHorizontal, X } from "lucide-react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useWardrobe } from "../context/WardrobeContext";
 import { ClothingCard } from "../components/ClothingCard";
 import { UploadModal } from "../components/UploadModal";
@@ -14,6 +15,8 @@ type SortKey = "recent" | "name" | "most-worn";
 
 export function Wardrobe() {
   const { items, addItem, removeItem, toggleFavoriteItem } = useWardrobe();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<Category | "all">("all");
   const [sort, setSort] = useState<SortKey>("recent");
@@ -47,6 +50,16 @@ export function Wardrobe() {
     });
     return c;
   }, [items]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("upload") !== "1") return;
+    setUploadOpen(true);
+    params.delete("upload");
+    navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+  }, [location.pathname, location.search, navigate]);
+
+  const wardrobeIsEmpty = items.length === 0;
 
   return (
     <div className="mx-auto max-w-[1400px] space-y-5 md:space-y-6">
@@ -90,10 +103,11 @@ export function Wardrobe() {
             ♥ Favorites
           </button>
           <button
+            data-onboarding-target="add-clothing"
             onClick={() => setUploadOpen(true)}
             className="flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] transition-shadow hover:shadow-lg hover:shadow-[color:var(--color-gold-shadow)]/40 sm:w-auto"
           >
-            <Plus className="h-4 w-4" /> Add piece
+            <Plus className="h-4 w-4" /> Add Clothing
           </button>
         </div>
       </div>
@@ -122,15 +136,43 @@ export function Wardrobe() {
       {/* Grid */}
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-dashed border-[color:var(--color-border)] px-4 py-14 text-center md:py-20">
-          <p className="font-serif text-base text-[color:var(--color-ink)]">
-            {query ? "No pieces match your search" : "Nothing here yet"}
-          </p>
-          <p className="text-sm text-[color:var(--color-ink-muted)] mt-2">
-            {query
-              ? "Try a different keyword, color, or tag."
-              : "Add your first piece to begin curating your wardrobe."}
-          </p>
-          {!query && (
+          {wardrobeIsEmpty ? (
+            <>
+              <p className="font-serif text-2xl text-[color:var(--color-ink)]">
+                Your wardrobe is empty.
+              </p>
+              <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
+                Start by uploading 5-10 clothing items.
+              </p>
+              <div className="mx-auto mt-5 grid max-w-xs gap-2 text-left text-sm text-[color:var(--color-ink-muted)]">
+                {["Generate outfits", "Ask the stylist", "Get Smart Buy recommendations", "Build travel packing lists"].map((item) => (
+                  <p key={item} className="flex gap-2">
+                    <span className="text-[color:var(--color-gold)]">•</span>
+                    <span>{item}</span>
+                  </p>
+                ))}
+              </div>
+              <button
+                data-onboarding-target="add-clothing"
+                onClick={() => setUploadOpen(true)}
+                className="mt-6 h-11 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"
+              >
+                Add First Item
+              </button>
+            </>
+          ) : (
+            <>
+              <p className="font-serif text-base text-[color:var(--color-ink)]">
+                {query ? "No pieces match your search" : "Nothing here yet"}
+              </p>
+              <p className="text-sm text-[color:var(--color-ink-muted)] mt-2">
+                {query
+                  ? "Try a different keyword, color, or tag."
+                  : "Add your first piece to begin curating your wardrobe."}
+              </p>
+            </>
+          )}
+          {!query && !wardrobeIsEmpty && (
             <button
               onClick={() => setUploadOpen(true)}
               className="mt-5 h-11 w-full rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)] sm:w-auto"

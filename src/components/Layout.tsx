@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";
 import { MobileBottomNav } from "./MobileBottomNav";
+import { OnboardingTour } from "./OnboardingTour";
 
 export function Layout() {
   return (
@@ -19,6 +20,7 @@ export function Layout() {
       </div>
 
       <MobileBottomNav />
+      <OnboardingTour />
     </div>
   );
 }

@@ -48,7 +48,10 @@ export function Insights() {
   return (
     <div className="mx-auto max-w-[1400px] space-y-5 md:space-y-6">
       {/* Topline */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
+      <div
+        data-onboarding-target="wardrobe-analytics"
+        className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4"
+      >
         <KPI icon={Shirt} label="Pieces" value={items.length} />
         <KPI icon={Flame} label="Total wears" value={totalWears} />
         <KPI icon={Leaf} label="Styled outfits" value={styledOutfits} />

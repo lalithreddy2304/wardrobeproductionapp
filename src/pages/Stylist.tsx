@@ -350,6 +350,7 @@ export function Stylist() {
                 event.preventDefault();
                 send();
               }}
+              data-onboarding-target="stylist-input"
               className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)] p-3 transition-shadow focus-within:border-[color:var(--color-gold)]/40 focus-within:shadow-[0_0_0_3px_rgba(201,168,76,0.1)] md:p-4"
             >
               <div className="flex items-end gap-3">

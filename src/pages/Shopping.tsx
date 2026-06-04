@@ -306,6 +306,7 @@ export function Shopping() {
             </header>
 
             <div
+              data-onboarding-target="smart-buy-recommendations"
               onClick={() => inputRef.current?.click()}
               onDragOver={(event) => event.preventDefault()}
               onDrop={(event) => {

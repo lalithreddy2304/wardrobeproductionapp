@@ -168,7 +168,10 @@ export function OutfitGenerator() {
         </div>
 
         <div className="space-y-4">
-          <div className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-6">
+          <div
+            data-onboarding-target="generate-outfit"
+            className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:p-6"
+          >
             <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-ink-dim)]">Occasion</p>
             <h3 className="font-serif text-xl text-[color:var(--color-ink)] mt-1 mb-4">Set the scene</h3>
             <div className="space-y-2">

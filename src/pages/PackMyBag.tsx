@@ -63,7 +63,10 @@ export function PackMyBag() {
 
   return (
     <div className="mx-auto max-w-[1200px] space-y-5 md:space-y-6">
-      <section className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:rounded-3xl md:p-8">
+      <section
+        data-onboarding-target="packing-recommendations"
+        className="rounded-2xl border border-[color:var(--color-border-soft)] bg-[color:var(--color-surface)] p-4 md:rounded-3xl md:p-8"
+      >
         <div className="mb-5 md:mb-7">
           <p className="text-[10px] uppercase tracking-[0.3em] text-[color:var(--color-gold)]">
             Travel planner
