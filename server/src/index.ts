@@ -13,7 +13,9 @@ import { isAIConfigured } from "./services/ai.js";
 const PORT = Number(process.env.PORT) || 3001;
 const app = express();
 const allowedOrigins = [
+  "https://wardrobeproductionapp.vercel.app",
   "http://localhost:5173",
+  "http://localhost:3000",
   "http://127.0.0.1:5173",
   ...(process.env.CORS_ORIGIN ?? process.env.FRONTEND_URL ?? "")
     .split(",")
@@ -36,6 +38,7 @@ app.use(
       callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 app.use(express.json({ limit: "20mb" }));
