@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { CSSProperties } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 
 const ONBOARDING_KEY_PREFIX = "my-wardrobe:onboarding-tour-complete:";
@@ -19,18 +19,13 @@ const TOUR_STEPS: TourStep[] = [
     route: "/wardrobe",
     target: "add-clothing",
     title: "Build your digital wardrobe.",
-    body: [
-      "Upload shirts, pants, shoes, and accessories.",
-      "The more clothes you add, the smarter your recommendations become.",
-    ],
+    body: ["Upload clothes and accessories.", "More items make recommendations smarter."],
   },
   {
     route: "/generate",
     target: "generate-outfit",
-    title: "Generate complete outfits from your wardrobe.",
-    body: [
-      "The AI combines clothing you already own and creates looks for different occasions.",
-    ],
+    title: "Generate complete outfits.",
+    body: ["Create looks using clothes you already own."],
     examples: ["Casual", "Date Night", "Wedding", "Office", "Travel"],
   },
   {
@@ -47,27 +42,22 @@ const TOUR_STEPS: TourStep[] = [
   {
     route: "/shopping",
     target: "smart-buy-recommendations",
-    title: "Smart Buy identifies missing pieces in your wardrobe.",
-    body: [
-      "Instead of buying random clothes, it recommends items that increase outfit variety and improve your wardrobe.",
-    ],
+    title: "Find useful missing pieces.",
+    body: ["Smart Buy recommends items that add more outfit variety."],
     examples: ["White sneakers", "Navy blazer", "Black trousers"],
   },
   {
     route: "/pack",
     target: "packing-recommendations",
     title: "Travel smarter.",
-    body: [
-      "Tell us your destination and trip length.",
-      "Pack creates a wardrobe-aware packing list using the clothes you already own.",
-    ],
+    body: ["Enter your trip details.", "Pack builds a list from your own wardrobe."],
     examples: ["Weekend trip", "Business travel", "Beach vacation"],
   },
   {
     route: "/insights",
     target: "wardrobe-analytics",
     title: "Understand your wardrobe.",
-    body: ["See:"],
+    body: ["See your wardrobe health at a glance."],
     examples: ["Most-used colors", "Category balance", "Missing essentials", "Wardrobe health"],
   },
 ];
@@ -166,6 +156,11 @@ export function OnboardingTour() {
     setActiveStep(activeStep + 1);
   };
 
+  const previous = () => {
+    if (activeStep === null || activeStep <= 0) return;
+    setActiveStep(activeStep - 1);
+  };
+
   const uploadFirstItem = () => {
     complete();
     navigate("/wardrobe?upload=1");
@@ -176,15 +171,19 @@ export function OnboardingTour() {
   return (
     <>
       {showWelcome && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/65 px-4 py-8 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] p-5 shadow-2xl md:p-6">
-            <h2 className="font-serif text-3xl leading-tight text-[color:var(--color-ink)]">
-              Welcome to My Wardrobe
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
-              Your AI-powered personal stylist built around the clothes you already own.
-            </p>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/65 px-3 pb-[env(safe-area-inset-bottom)] pt-6 backdrop-blur-sm md:items-center md:px-4 md:py-8">
+          <div className="flex max-h-[70vh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] shadow-2xl md:rounded-2xl">
+            <div className="shrink-0 px-4 pt-4 md:px-6 md:pt-6">
+              <h2 className="font-serif text-3xl leading-tight text-[color:var(--color-ink)]">
+                Welcome to My Wardrobe
+              </h2>
+            </div>
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 md:px-6">
+              <p className="text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
+                Your AI stylist, built around clothes you already own.
+              </p>
+            </div>
+            <div className="sticky bottom-0 grid shrink-0 gap-3 border-t border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 sm:grid-cols-2 md:px-6 md:pb-6">
               <button
                 type="button"
                 onClick={startTour}
@@ -211,14 +210,15 @@ export function OnboardingTour() {
           stepNumber={activeStep + 1}
           totalSteps={TOUR_STEPS.length}
           onNext={next}
+          onPrevious={previous}
           onSkip={complete}
         />
       )}
 
       {finishStep && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/65 px-4 py-8 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] p-5 shadow-2xl md:p-6">
-            <div className="flex items-start justify-between gap-4">
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-black/65 px-3 pb-[env(safe-area-inset-bottom)] pt-6 backdrop-blur-sm md:items-center md:px-4 md:py-8">
+          <div className="flex max-h-[70vh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] shadow-2xl md:rounded-2xl">
+            <div className="flex shrink-0 items-start justify-between gap-4 px-4 pt-4 md:px-6 md:pt-6">
               <div>
                 <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">
                   Tour complete
@@ -236,13 +236,15 @@ export function OnboardingTour() {
                 <X className="h-4 w-4" />
               </button>
             </div>
-            <p className="mt-3 text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
-              Start by uploading a few clothes.
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
-              Your recommendations become better as your wardrobe grows.
-            </p>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 md:px-6">
+              <p className="text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
+                Start by uploading a few clothes.
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
+                Recommendations improve as your wardrobe grows.
+              </p>
+            </div>
+            <div className="sticky bottom-0 grid shrink-0 gap-3 border-t border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 sm:grid-cols-2 md:px-6 md:pb-6">
               <button
                 type="button"
                 onClick={uploadFirstItem}
@@ -271,6 +273,7 @@ function SpotlightOverlay({
   stepNumber,
   totalSteps,
   onNext,
+  onPrevious,
   onSkip,
 }: {
   rect: Rect | null;
@@ -278,6 +281,7 @@ function SpotlightOverlay({
   stepNumber: number;
   totalSteps: number;
   onNext: () => void;
+  onPrevious: () => void;
   onSkip: () => void;
 }) {
   const cardStyle = getCardStyle(rect);
@@ -316,10 +320,10 @@ function SpotlightOverlay({
       )}
 
       <div
-        className="fixed pointer-events-auto w-[min(92vw,390px)] rounded-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] p-4 shadow-2xl md:p-5"
+        className="fixed bottom-0 left-0 right-0 pointer-events-auto flex max-h-[70vh] w-full flex-col overflow-hidden rounded-t-2xl border border-[color:var(--color-border)] bg-[color:var(--color-bg-elev)] shadow-2xl md:bottom-auto md:left-auto md:right-auto md:w-[min(92vw,390px)] md:rounded-2xl"
         style={cardStyle}
       >
-        <div className="mb-3 flex items-center justify-between gap-3">
+        <div className="flex shrink-0 items-center justify-between gap-3 px-4 pt-4 md:px-6 md:pt-6">
           <p className="text-[10px] uppercase tracking-[0.25em] text-[color:var(--color-gold)]">
             Step {stepNumber} of {totalSteps}
           </p>
@@ -331,37 +335,60 @@ function SpotlightOverlay({
             Skip
           </button>
         </div>
-        <h2 className="font-serif text-2xl leading-tight text-[color:var(--color-ink)]">
-          {step.title}
-        </h2>
-        <div className="mt-3 space-y-2 text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
-          {step.body.map((line) => (
-            <p key={line}>{line}</p>
-          ))}
-        </div>
-        {step.examples && (
-          <ul className="mt-4 grid gap-1.5 text-sm text-[color:var(--color-ink-muted)]">
-            {step.examples.map((example) => (
-              <li key={example} className="flex gap-2">
-                <span className="text-[color:var(--color-gold)]">•</span>
-                <span>{example}</span>
-              </li>
+
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 md:px-6">
+          <h2 className="font-serif text-2xl leading-tight text-[color:var(--color-ink)]">
+            {step.title}
+          </h2>
+          <div className="mt-3 space-y-2 text-sm leading-relaxed text-[color:var(--color-ink-muted)]">
+            {step.body.map((line) => (
+              <p key={line}>{line}</p>
             ))}
-          </ul>
-        )}
-        <button
-          type="button"
-          onClick={onNext}
-          className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-5 text-sm font-medium text-[color:var(--color-bg)]"
-        >
-          Next <ArrowRight className="h-4 w-4" />
-        </button>
+          </div>
+          {step.examples && (
+            <ul className="mt-4 grid gap-1.5 text-sm text-[color:var(--color-ink-muted)]">
+              {step.examples.map((example) => (
+                <li key={example} className="flex gap-2">
+                  <span className="text-[color:var(--color-gold)]">•</span>
+                  <span>{example}</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="sticky bottom-0 grid shrink-0 grid-cols-2 gap-3 border-t border-[color:var(--color-border-soft)] bg-[color:var(--color-bg-elev)] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-4 md:px-6 md:pb-6">
+          <button
+            type="button"
+            onClick={onPrevious}
+            disabled={stepNumber === 1}
+            className="flex h-11 items-center justify-center gap-2 rounded-full border border-[color:var(--color-border)] px-4 text-sm text-[color:var(--color-ink)] hover:border-[color:var(--color-gold)]/50 disabled:cursor-not-allowed disabled:opacity-45"
+          >
+            <ArrowLeft className="h-4 w-4" /> Previous
+          </button>
+          <button
+            type="button"
+            onClick={onNext}
+            className="flex h-11 items-center justify-center gap-2 rounded-full bg-gradient-to-b from-[color:var(--color-gold-bright)] to-[color:var(--color-gold)] px-4 text-sm font-medium text-[color:var(--color-bg)]"
+          >
+            Next <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
 function getCardStyle(rect: Rect | null): CSSProperties {
+  if (window.innerWidth < 768) {
+    return {
+      bottom: 0,
+      left: 0,
+      right: 0,
+      top: "auto",
+    };
+  }
+
   if (!rect) {
     return {
       left: "50%",
