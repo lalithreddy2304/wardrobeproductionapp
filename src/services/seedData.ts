@@ -21,8 +21,6 @@ function buildMaleSeed(gender: Gender = "male"): SeedWardrobeItem[] {
   return [
     mk("White T-Shirt",          "tops", "White",    ["casual", "cotton", "party", "travel"],
        "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?w=800&q=80", gender, true),
-    mk("Navy Polo Shirt",        "tops", "Navy",     ["casual", "cotton", "travel", "smart-casual"],
-       "https://images.unsplash.com/photo-1571455786673-9d9d6c194f90?w=800&q=80", gender),
     mk("Charcoal Blazer",        "tops", "Charcoal", ["formal", "blazer", "wedding", "office", "party"],
        "https://images.unsplash.com/photo-1731586263008-5657796fa016?w=800&q=80", gender, true),
     mk("Camel Crewneck Sweater", "tops", "Camel",    ["casual", "wool", "office", "date", "smart-casual"],
