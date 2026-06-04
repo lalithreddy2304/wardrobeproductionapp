@@ -7,10 +7,41 @@ import { uid } from "../utils.js";
 
 const router = Router();
 router.use(requireAuth);
+router.use((req, _res, next) => {
+  try {
+    const result = repo.ensureUserForAuth(req.auth!);
+    req.auth = { userId: result.user.id, email: result.user.email };
+  } catch (error) {
+    console.warn("[chat:user-sync] could not ensure user before chat request:", error);
+  }
+  next();
+});
+
+function getChatSafely(userId: string): ChatMessage[] {
+  try {
+    return repo.getChat(userId);
+  } catch (error) {
+    console.warn("[chat] could not read chat history:", error);
+    return [];
+  }
+}
+
+function addChatSafely(userId: string, message: ChatMessage) {
+  try {
+    repo.addChat(userId, message);
+  } catch (error) {
+    console.warn("[chat] could not save chat message:", {
+      userId,
+      messageId: message.id,
+      role: message.role,
+      error,
+    });
+  }
+}
 
 router.get("/", (req, res) => {
   const userId = req.auth!.userId;
-  let messages = repo.getChat(userId);
+  let messages = getChatSafely(userId);
   if (messages.length === 0) {
     const welcome: ChatMessage = {
       id: uid("m_"),
@@ -18,7 +49,7 @@ router.get("/", (req, res) => {
       content: greeting(),
       timestamp: Date.now(),
     };
-    repo.addChat(userId, welcome);
+    addChatSafely(userId, welcome);
     messages = [welcome];
   }
   res.json({ messages, aiEnabled: isAIConfigured() });
@@ -43,11 +74,11 @@ router.post("/", async (req, res) => {
     content: content.trim(),
     timestamp: Date.now(),
   };
-  repo.addChat(userId, userMsg);
+  addChatSafely(userId, userMsg);
 
   const items = Array.isArray(bodyItems) ? bodyItems : repo.getItems(userId);
   const outfits = Array.isArray(bodyOutfits) ? bodyOutfits : repo.getOutfits(userId);
-  const history = repo.getChat(userId).slice(-10).map((m) => ({
+  const history = getChatSafely(userId).slice(-10).map((m) => ({
     role: m.role,
     content: m.content,
   }));
@@ -73,20 +104,24 @@ router.post("/", async (req, res) => {
     content: replyContent,
     timestamp: Date.now(),
   };
-  repo.addChat(userId, reply);
+  addChatSafely(userId, reply);
   res.json({ userMessage: userMsg, reply });
 });
 
 router.delete("/", (req, res) => {
   const userId = req.auth!.userId;
-  repo.clearChat(userId);
+  try {
+    repo.clearChat(userId);
+  } catch (error) {
+    console.warn("[chat] could not clear chat history:", error);
+  }
   const welcome: ChatMessage = {
     id: uid("m_"),
     role: "assistant",
     content: greeting(),
     timestamp: Date.now(),
   };
-  repo.addChat(userId, welcome);
+  addChatSafely(userId, welcome);
   res.json({ messages: [welcome] });
 });
 

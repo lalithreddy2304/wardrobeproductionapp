@@ -45,6 +45,17 @@ type ChatRow = {
   timestamp: number;
 };
 
+type AuthUserRef = {
+  userId: string;
+  email: string;
+};
+
+type EnsureUserResult = {
+  user: User;
+  created: boolean;
+  source: "id" | "email" | "created";
+};
+
 function rowToUser(r: UserRow): User {
   return {
     id: r.id,
@@ -93,6 +104,11 @@ function rowToChat(r: ChatRow): ChatMessage {
   };
 }
 
+function displayNameFromEmail(email: string): string {
+  const name = email.split("@")[0]?.trim();
+  return name || "User";
+}
+
 export const repo = {
   findUserByEmail(email: string): (User & { passwordHash: string | null }) | null {
     const row = db
@@ -112,6 +128,61 @@ export const repo = {
       `INSERT INTO users (id, email, display_name, photo_url, provider, password_hash, created_at)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
     ).run(user.id, user.email, user.displayName, user.photoURL ?? null, user.provider, passwordHash, Date.now());
+  },
+
+  ensureUserForAuth(auth: AuthUserRef): EnsureUserResult {
+    console.info("[chat:user-sync] user id received", {
+      userId: auth.userId,
+      email: auth.email,
+    });
+
+    const existingById = repo.findUserById(auth.userId);
+    console.info("[chat:user-sync] user lookup result", {
+      lookup: "id",
+      userId: auth.userId,
+      found: Boolean(existingById),
+      matchedUserId: existingById?.id ?? null,
+    });
+    if (existingById) {
+      console.info("[chat:user-sync] user creation result", {
+        userId: existingById.id,
+        created: false,
+        source: "id",
+      });
+      return { user: existingById, created: false, source: "id" };
+    }
+
+    const existingByEmail = repo.findUserByEmail(auth.email);
+    console.info("[chat:user-sync] user lookup result", {
+      lookup: "email",
+      email: auth.email,
+      found: Boolean(existingByEmail),
+      matchedUserId: existingByEmail?.id ?? null,
+    });
+    if (existingByEmail) {
+      const { passwordHash: _, ...user } = existingByEmail;
+      console.info("[chat:user-sync] user creation result", {
+        userId: user.id,
+        requestedUserId: auth.userId,
+        created: false,
+        source: "email",
+      });
+      return { user, created: false, source: "email" };
+    }
+
+    const user: User = {
+      id: auth.userId,
+      email: auth.email,
+      displayName: displayNameFromEmail(auth.email),
+      provider: "google",
+    };
+    repo.createUser(user, null);
+    console.info("[chat:user-sync] user creation result", {
+      userId: user.id,
+      created: true,
+      source: "created",
+    });
+    return { user, created: true, source: "created" };
   },
 
   deleteUser(userId: string): boolean {
@@ -261,9 +332,15 @@ export const repo = {
   },
 
   addChat(userId: string, msg: ChatMessage) {
-    db.prepare(
+    const result = db.prepare(
       `INSERT INTO chat_messages (id, user_id, role, content, timestamp) VALUES (?, ?, ?, ?, ?)`
     ).run(msg.id, userId, msg.role, msg.content, msg.timestamp);
+    console.info("[chat] chat insert result", {
+      userId,
+      messageId: msg.id,
+      role: msg.role,
+      changes: result.changes,
+    });
     const count = db
       .prepare("SELECT COUNT(*) as c FROM chat_messages WHERE user_id = ?")
       .get(userId) as { c: number };
