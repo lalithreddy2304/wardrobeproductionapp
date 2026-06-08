@@ -1,15 +1,100 @@
-Over the past few months, I've been building My Wardrobe, an AI-powered wardrobe management platform designed to help users organize their clothing, generate outfit recommendations, identify wardrobe gaps, and receive personalized styling advice.
+# My Wardrobe
 
-What started as a simple wardrobe organizer quickly turned into a much larger engineering challenge. I didn't want recommendations to feel random, so I built a custom rule engine that combines Itten's Color Theory, the French 60/30/10 styling method, and Capsule Wardrobe Versatility Analysis to evaluate and rank outfit combinations.
+Premium wardrobe app with real AI styling, Firebase-ready architecture, and a minimal dark UI.
 
-The platform includes features such as AI-powered styling assistance, intelligent outfit generation, Wardrobe Gaps that identify the pieces most likely to expand a user's outfit options, and Smart Buy, which allows users to upload a clothing item and receive a recommendation based on how well it fits their existing wardrobe.
+## For founders — how this app is built
 
-The application is built with React, TypeScript, Node.js, Express, Firebase, Cloudinary, and Groq AI. The frontend is hosted on Vercel, the backend runs on Render, and all AI requests are routed securely through the backend rather than exposed on the client.
+Read **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** first. It explains frontend vs backend, where secrets go, and how data flows.
 
-One of the more interesting challenges was migrating the AI layer from Gemini to Groq while maintaining the existing user experience and architecture. Along the way, I also worked through authentication flows, database indexing, deployment issues, cloud integrations, and the many small problems that come with moving a project from prototype to production.
+### Two modes (automatic)
 
-The platform is currently being used by 200+ users, and seeing real people interact with something I built from scratch has been one of the most rewarding parts of the experience.
+| Mode | You need | Data | Auth |
+|------|----------|------|------|
+| **Dev (default)** | `server/.env` + `npm run dev:server` | SQLite API | Email or demo Google |
+| **Firebase** | `.env.local` with Firebase + Cloudinary vars | Firestore + Cloudinary images | Firebase Auth |
 
-Live Demo:
-https://wardrobeproductionapp.vercel.app
+## Quick start
 
+```bash
+# Install
+npm install
+npm install --prefix server
+
+# Server secrets — copy and add your Groq key
+cp server/.env.example server/.env
+
+# Terminal 1
+npm run dev:server
+
+# Terminal 2
+npm run dev
+```
+
+Open **http://localhost:5173** → **Continue with Google** for instant demo.
+
+## Real AI (required for stylist)
+
+Add to `server/.env`:
+
+```
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=llama-3.3-70b-versatile
+```
+
+Or use `OPENAI_API_KEY` instead. Without this, the stylist returns an error (no fake responses).
+
+## Firebase setup
+
+1. Create a project at [Firebase Console](https://console.firebase.google.com)
+2. Enable **Authentication** (Email + Google)
+3. Create **Firestore** database
+4. Copy web config into `.env.local` (see `.env.example`)
+5. Deploy rules: `firebase deploy --only firestore:rules` (uses `firestore.rules`)
+
+## Cloudinary image hosting
+
+Wardrobe images are uploaded to Cloudinary with an unsigned upload preset. The returned Cloudinary URL is saved in the existing Firestore `wardrobeItems.imageUrl` field.
+
+Add these to `.env.local`:
+
+```env
+VITE_CLOUDINARY_CLOUD_NAME=your_cloud_name
+VITE_CLOUDINARY_UPLOAD_PRESET=your_unsigned_upload_preset
+VITE_CLOUDINARY_FOLDER=wardrobe
+```
+
+`VITE_CLOUDINARY_FOLDER` is optional. If omitted, uploads are stored under `wardrobe/{userId}`.
+
+Public `VITE_*` keys are safe in the frontend. **Never** put `GROQ_API_KEY` in the frontend.
+
+## Project structure
+
+```
+src/
+  components/ui/     Design system (Button, Card, StatCard)
+  pages/             Screens
+  context/           Global auth + wardrobe state
+  services/          API client, Firebase helpers
+  lib/               Firebase init, utils, outfit helpers
+
+server/
+  src/routes/        HTTP endpoints
+  src/services/ai.ts Real LLM (Groq / OpenAI)
+  data/              SQLite (dev mode)
+```
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Frontend |
+| `npm run dev:server` | API + AI |
+| `npm run build` | Production frontend |
+
+## Vercel deployment
+
+- Frontend build command: `npm run build`
+- Frontend output directory: `dist`
+- Add the Firebase and Cloudinary `VITE_*` values in Vercel project settings.
+- Do not add `GROQ_API_KEY`, `OPENAI_API_KEY`, `JWT_SECRET`, or Firebase Admin private keys as `VITE_*` variables.
+- If the Express API is deployed separately, set `VITE_API_URL` to that API origin and set server `CORS_ORIGIN` to the Vercel frontend origin.
